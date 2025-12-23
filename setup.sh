@@ -1,20 +1,13 @@
-# 1. キャッシュクリア
-npm cache clean --force
-
-# 2. node_modulesとlockファイル削除
+# 完全にクリーンアップ
 rm -rf node_modules package-lock.json
 
-# 3. npmの設定確認と修正
+# npm設定を確実に
 npm config set registry https://registry.npmjs.org/
-npm config set fetch-retry-maxtimeout 60000
-npm config set fetch-retry-mintimeout 10000
+npm config delete proxy
+npm config delete https-proxy
 
-# 4. ネットワーク確認
-curl -I https://registry.npmjs.org/
+# キャッシュクリア
+npm cache clean --force
 
-# 5. 段階的インストール（最も確実）
-npm init -y
-npm install react --save-exact
-npm install react-dom --save-exact
-npm install react-router-dom --save-exact
-npm install axios --save-exact
+# インストール
+npm install
