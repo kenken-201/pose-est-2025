@@ -1,28 +1,38 @@
 {
   "name": "pose-est-front",
   "private": true,
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "react-router dev",
-    "build": "react-router build",
-    "start": "react-router-serve ./build/server/index.js"
+    "dev": "vite",
+    "build": "tsc && vite build"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.90.12",
-    "axios": "^1.13.2",
-    "lucide-react": "^0.562.0",
-    "react": "^19",
-    "react-dom": "^19",
-    "react-dropzone": "^14.3.8",
-    "react-player": "^3.4.0",
-    "react-router": "^7.11.0",
-    "winston": "^3.19.0",
-    "zod": "^4.2.1",
-    "zustand": "^5.0.9"
+    "axios": "1.13.2",
+    "lucide-react": "^0.469.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-router-dom": "6.30.2"
   },
   "devDependencies": {
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "typescript": "^5"
-  }
+    "@types/node": "^20.10.5",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "@vitejs/plugin-react": "^4.2.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.12"
+  },
+  "description": "A modern, production-ready template for building full-stack React applications using React Router.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kenken-201/pose-est-2025.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kenken-201/pose-est-2025/issues"
+  },
+  "homepage": "https://github.com/kenken-201/pose-est-2025#readme"
 }
