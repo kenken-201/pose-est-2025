@@ -1,5 +1,3 @@
-# vite-env.d.ts を作成（環境変数の型定義）
-cat > app/vite-env.d.ts << 'EOF'
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
@@ -14,4 +12,3 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv
 }
-EOF
