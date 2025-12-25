@@ -41,6 +41,18 @@ export default function App() {
   return <Outlet />;
 }
 
+/**
+ * SPAモードで必要なハイドレーションフォールバック
+ * 初期HTMLレンダリング時に表示される
+ */
+export function HydrateFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <p>読み込み中...</p>
+    </div>
+  );
+}
+
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let message = "予期せぬエラーが発生しました";
   let details: string = "不明なエラー";
