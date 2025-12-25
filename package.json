@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "test": "vitest",
     "build": "react-router build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -34,9 +33,6 @@
   },
   "devDependencies": {
     "@react-router/dev": "^7.11.0",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.1",
-    "@types/jest": "^30.0.0",
     "@types/node": "^20.17.24",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
@@ -48,7 +44,6 @@
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^16.5.0",
-    "happy-dom": "^20.0.11",
     "husky": "^9.1.7",
     "postcss": "^8.5.3",
     "prettier": "^3.4.2",
@@ -56,8 +51,7 @@
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.50.1",
     "vite": "^5.4.11",
-    "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^4.0.16"
+    "vite-tsconfig-paths": "^5.1.4"
   },
   "engines": {
     "node": ">=18.0.0"
