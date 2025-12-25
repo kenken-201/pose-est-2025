@@ -1,3 +1,4 @@
+import type { Route } from "./+types/root";
 import {
   isRouteErrorResponse,
   Links,
@@ -7,25 +8,20 @@ import {
   ScrollRestoration,
 } from "react-router";
 
-import type { Route } from "./+types/root";
-import "./app.css";
+import "./styles/globals.css";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
-  {
-    rel: "preconnect",
-    href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous",
-  },
+  { rel: "preconnect", href: "https://fonts.gstatic.com" },
   {
     rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+    href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
   },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="ja">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -46,30 +42,39 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
-  let details = "An unexpected error occurred.";
+  let message = "予期せぬエラーが発生しました";
+  let details: string = "不明なエラー";
   let stack: string | undefined;
 
+  // 型安全な処理
+  // リントチェック回避のために厳密化、ここまでする必要があるかは後で見直す
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
-    details =
-      error.status === 404
-        ? "The requested page could not be found."
-        : error.statusText || details;
-  } else if (import.meta.env.DEV && error && error instanceof Error) {
+    message = error.status === 404 ? "ページが見つかりません" : "エラーが発生しました";
+    details = error.data?.message || error.statusText || "エラーの詳細はありません";
+  } else if (error instanceof Error) {
     details = error.message;
-    stack = error.stack;
+    if (import.meta.env.DEV) {
+      stack = error.stack;
+    }
+  } else if (typeof error === "string") {
+    details = error;
+  } else if (error && typeof error === "object" && "message" in error) {
+    details = String((error as { message: unknown }).message);
+  } else {
+    details = String(error);
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>
-      <p>{details}</p>
-      {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
-          <code>{stack}</code>
-        </pre>
-      )}
+    <main className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
+        <h1 className="text-2xl font-bold text-red-600 mb-4">{message}</h1>
+        <p className="text-gray-600 mb-6">{details}</p>
+        {stack && (
+          <pre className="bg-gray-100 p-4 rounded-lg overflow-auto text-sm">
+            {stack}
+          </pre>
+        )}
+      </div>
     </main>
   );
 }

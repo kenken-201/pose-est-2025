@@ -1,10 +1,13 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { reactRouter } from '@react-router/dev/vite'
 import { resolve } from 'path'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 export default defineConfig({
-  plugins: [react(), tsconfigPaths()],
+  plugins: [
+    reactRouter(),
+    tsconfigPaths(),
+  ],
   resolve: {
     alias: {
       '@': resolve(__dirname, './app'),
