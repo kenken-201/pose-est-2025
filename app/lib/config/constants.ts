@@ -1,0 +1,82 @@
+/**
+ * @fileoverview アプリケーション全体で使用される定数と設定値
+ * 
+ * 環境変数から値を読み込み、デフォルト値にフォールバックする設計になっています。
+ * 本番環境では環境変数を適切に設定してください。
+ */
+
+/**
+ * 環境変数から数値を安全に取得するヘルパー関数
+ * @param key - 環境変数のキー（VITE_プレフィックス付き）
+ * @param defaultValue - 環境変数が未設定の場合のデフォルト値
+ * @returns パースされた数値、またはデフォルト値
+ */
+const getEnvNumber = (key: string, defaultValue: number): number => {
+    if (typeof import.meta !== 'undefined' && import.meta.env?.[key]) {
+        const parsed = parseInt(import.meta.env[key], 10);
+        return isNaN(parsed) ? defaultValue : parsed;
+    }
+    return defaultValue;
+};
+
+/**
+ * 環境変数から文字列を安全に取得するヘルパー関数
+ * @param key - 環境変数のキー（VITE_プレフィックス付き）
+ * @param defaultValue - 環境変数が未設定の場合のデフォルト値
+ * @returns 環境変数の値、またはデフォルト値
+ */
+const getEnvString = (key: string, defaultValue: string): string => {
+    if (typeof import.meta !== 'undefined' && import.meta.env?.[key]) {
+        return import.meta.env[key];
+    }
+    return defaultValue;
+};
+
+/**
+ * アプリケーション設定オブジェクト
+ * 
+ * @property APP_NAME - アプリケーション名
+ * @property API - API通信関連の設定
+ * @property UPLOAD - ファイルアップロード関連の設定
+ * @property UI - UI表示関連の設定
+ */
+export const APP_CONFIG = {
+    /** アプリケーション名 */
+    APP_NAME: 'KenKen Pose Est',
+
+    /** API通信関連の設定 */
+    API: {
+        /** バックエンドAPIのベースURL */
+        BASE_URL: getEnvString('VITE_API_BASE_URL', 'http://localhost:8000'),
+        /** APIリクエストのタイムアウト時間（ミリ秒） */
+        TIMEOUT_MS: getEnvNumber('VITE_API_TIMEOUT', 30000),
+        /** APIエンドポイントのパス定義 */
+        ENDPOINTS: {
+            /** 動画処理エンドポイント */
+            UPLOAD: '/process-video/',
+            /** ヘルスチェックエンドポイント */
+            HEALTH: '/health',
+        },
+    },
+
+    /** ファイルアップロード関連の設定 */
+    UPLOAD: {
+        /** アップロード可能な最大ファイルサイズ（バイト） */
+        MAX_SIZE_BYTES: getEnvNumber('VITE_MAX_VIDEO_SIZE', 100 * 1024 * 1024),
+        /** 受け入れ可能なMIMEタイプと拡張子のマッピング */
+        ACCEPTED_TYPES: {
+            'video/mp4': ['.mp4'],
+            'video/quicktime': ['.mov'],
+            'video/webm': ['.webm'],
+        } as Record<string, string[]>,
+    },
+
+    /** UI表示関連の設定 */
+    UI: {
+        /** Toast通知の表示時間（ミリ秒） */
+        TOAST_DURATION_MS: 5000,
+    },
+} as const;
+
+/** APP_CONFIGの型定義（読み取り専用） */
+export type AppConfig = typeof APP_CONFIG;

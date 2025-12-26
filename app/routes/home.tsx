@@ -1,6 +1,6 @@
-import type { Route } from "./+types/home";
 
-export function meta({}: Route.MetaArgs) {
+
+export function meta() {
   return [
     { title: "KenKen姿勢推定スポーツ分析" },
     { name: "description", content: "動画をアップロードしてAI姿勢推定を実行" },

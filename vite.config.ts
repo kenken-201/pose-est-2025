@@ -26,6 +26,8 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    // クライアント側でサーバーコードが見える（セキュリティリスク）
+    // ファイルサイズが増加、などの懸念があるため本番環境では無効化
+    sourcemap: false,
   },
 })
