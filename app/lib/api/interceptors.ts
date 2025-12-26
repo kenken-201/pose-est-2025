@@ -1,5 +1,6 @@
 import { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import { logger } from '../utils/logger';
+import { createErrorFromAxiosError } from './errors';
 
 /**
  * リクエストインターセプター
@@ -26,10 +27,6 @@ export const handleResponse = (response: AxiosResponse): AxiosResponse => {
     });
     return response;
 };
-
-import { createErrorFromAxiosError } from './errors';
-
-// ... (existing code)
 
 /**
  * レスポンスインターセプター（エラー時）

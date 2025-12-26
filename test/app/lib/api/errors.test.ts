@@ -89,7 +89,7 @@ describe('API Error Handling', () => {
             const appError = createErrorFromAxiosError(axiosError);
 
             expect(appError.code).toBe('NETWORK_ERROR');
-            expect(appError.message).toMatch(/Network [Ee]rror/); // Validation flexible for case
+            expect(appError.message).toBe('Network error');
             expect(appError.status).toBe(0);
         });
 

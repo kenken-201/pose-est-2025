@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { uploadVideo, healthCheck } from '@/lib/api/posture-estimation';
 import { apiClient } from '@/lib/api/client';
 import { APP_CONFIG } from '@/lib/config/constants';
+import { AppAPIError } from '@/lib/api/errors';
 
 // apiClientのモック
 // apiClientはオブジェクトとしてエクスポートされているため、メソッドをスパイします
@@ -50,7 +51,7 @@ describe('Posture Estimation API', () => {
                 })
             );
 
-            // FormDataの中身を検証（FormDataは直接inspectしにくいので、呼び出し引数をチェック）
+            // FormDataの中身を検証
             const formDataArg = (apiClient.post as Mock).mock.calls[0][1] as FormData;
             expect(formDataArg.get('video')).toBe(file);
 
@@ -58,7 +59,7 @@ describe('Posture Estimation API', () => {
             expect(result).toEqual(mockResponse.data);
         });
 
-        it('should throw error when API call fails', async () => {
+        it('should throw AppAPIError when API call fails', async () => {
             const file = new File(['content'], 'test.mp4', { type: 'video/mp4' });
             const error = new Error('API Error');
             
@@ -66,18 +67,46 @@ describe('Posture Estimation API', () => {
 
             await expect(uploadVideo(file)).rejects.toThrow('API Error');
         });
+
+        it('should throw AppAPIError for validation failures', async () => {
+            // 無効なファイル形式
+            const invalidFile = new File(['content'], 'test.txt', { type: 'text/plain' });
+
+            await expect(uploadVideo(invalidFile)).rejects.toThrow(AppAPIError);
+            
+            try {
+                await uploadVideo(invalidFile);
+            } catch (error) {
+                expect(error).toBeInstanceOf(AppAPIError);
+                expect((error as AppAPIError).code).toBe('VALIDATION_ERROR');
+                expect((error as AppAPIError).status).toBe(400);
+            }
+        });
     });
 
     /**
      * healthCheck関数のテスト
      */
     describe('healthCheck', () => {
-        it('should call health endpoint', async () => {
+        it('should return healthy result when API responds', async () => {
             (apiClient.get as Mock).mockResolvedValue({ data: { status: 'ok' } });
 
-            await healthCheck();
+            const result = await healthCheck();
 
+            expect(result.healthy).toBe(true);
+            expect(result.latencyMs).toBeDefined();
+            expect(result.error).toBeUndefined();
             expect(apiClient.get).toHaveBeenCalledWith(APP_CONFIG.API.ENDPOINTS.HEALTH);
+        });
+
+        it('should return unhealthy result with error message when API fails', async () => {
+            (apiClient.get as Mock).mockRejectedValue(new Error('Connection refused'));
+
+            const result = await healthCheck();
+
+            expect(result.healthy).toBe(false);
+            expect(result.latencyMs).toBeDefined();
+            expect(result.error).toBe('Connection refused');
         });
     });
 });

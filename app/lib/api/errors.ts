@@ -17,6 +17,8 @@ export class AppAPIError extends Error {
         this.code = code;
         this.status = status;
         this.data = data;
+        // TypeScript ES5ターゲット時のinstanceof互換性のため
+        Object.setPrototypeOf(this, AppAPIError.prototype);
     }
 }
 
