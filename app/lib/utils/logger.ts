@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * @fileoverview Cloudflare Pages互換の軽量ロガー
  *
