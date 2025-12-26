@@ -1,0 +1,132 @@
+import { describe, it, expect } from 'vitest';
+import { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
+import { AppAPIError, isAppAPIError, createErrorFromAxiosError } from '@/lib/api/errors';
+
+/**
+ * APIエラーハンドリングのテスト
+ */
+describe('API Error Handling', () => {
+    /**
+     * AppAPIErrorクラスのテスト
+     * 正しくプロパティが設定されるか確認します
+     */
+    describe('AppAPIError', () => {
+        it('should create an instance with correct properties', () => {
+            const error = new AppAPIError('Test Message', 'TEST_CODE', 400, { detail: 'info' });
+
+            expect(error).toBeInstanceOf(Error);
+            expect(error.message).toBe('Test Message');
+            expect(error.code).toBe('TEST_CODE');
+            expect(error.status).toBe(400);
+            expect(error.data).toEqual({ detail: 'info' });
+        });
+    });
+
+    /**
+     * タイプガードのテスト
+     */
+    describe('isAppAPIError', () => {
+        it('should return true for AppAPIError instances', () => {
+            const error = new AppAPIError('Test', 'TEST', 500);
+            expect(isAppAPIError(error)).toBe(true);
+        });
+
+        it('should return false for standard Error instances', () => {
+            const error = new Error('Test');
+            expect(isAppAPIError(error)).toBe(false);
+        });
+
+        it('should return false for non-error objects', () => {
+            expect(isAppAPIError({ message: 'test' })).toBe(false);
+            expect(isAppAPIError(null)).toBe(false);
+        });
+    });
+
+    /**
+     * AxiosErrorからの変換ロジックのテスト
+     */
+    describe('createErrorFromAxiosError', () => {
+        const mockConfig = { url: '/test' } as InternalAxiosRequestConfig;
+
+        it('should parse structured error response correctly', () => {
+            const responseData = {
+                error: 'Invalid input',
+                code: 'VALIDATION_ERROR',
+                details: { field: 'required' }
+            };
+            
+            const axiosError = new AxiosError(
+                'Request failed',
+                'ERR_BAD_REQUEST',
+                mockConfig,
+                {},
+                {
+                    status: 400,
+                    data: responseData,
+                    statusText: 'Bad Request',
+                    headers: {},
+                    config: mockConfig,
+                } as AxiosResponse
+            );
+
+            const appError = createErrorFromAxiosError(axiosError);
+
+            expect(appError).toBeInstanceOf(AppAPIError);
+            expect(appError.code).toBe('VALIDATION_ERROR');
+            expect(appError.message).toBe('Invalid input');
+            expect(appError.status).toBe(400);
+            expect(appError.data).toEqual(responseData.details);
+        });
+
+        it('should handle network errors', () => {
+            const axiosError = new AxiosError(
+                'Network Error',
+                'ERR_NETWORK',
+                mockConfig,
+                {}
+            );
+
+            const appError = createErrorFromAxiosError(axiosError);
+
+            expect(appError.code).toBe('NETWORK_ERROR');
+            expect(appError.message).toMatch(/Network [Ee]rror/); // Validation flexible for case
+            expect(appError.status).toBe(0);
+        });
+
+        it('should handle timeout errors', () => {
+            const axiosError = new AxiosError(
+                'Timeout of 1000ms exceeded',
+                'ECONNABORTED',
+                mockConfig,
+                {}
+            );
+
+            const appError = createErrorFromAxiosError(axiosError);
+
+            expect(appError.code).toBe('TIMEOUT_ERROR');
+            expect(appError.status).toBe(408);
+        });
+
+        it('should handle fallback for unknown errors', () => {
+            const axiosError = new AxiosError(
+                'Unknown Error',
+                'UNKNOWN',
+                mockConfig,
+                {},
+                {
+                    status: 500,
+                    data: 'Internal Server Error String', // JSONではないレスポンス
+                    statusText: 'Internal Server Error',
+                    headers: {},
+                    config: mockConfig,
+                } as AxiosResponse
+            );
+
+            const appError = createErrorFromAxiosError(axiosError);
+
+            expect(appError.code).toBe('UNKNOWN_ERROR');
+            expect(appError.status).toBe(500);
+            expect(appError.message).toBe('Unknown Error');
+        });
+    });
+});

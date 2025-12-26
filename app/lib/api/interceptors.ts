@@ -27,6 +27,10 @@ export const handleResponse = (response: AxiosResponse): AxiosResponse => {
     return response;
 };
 
+import { createErrorFromAxiosError } from './errors';
+
+// ... (existing code)
+
 /**
  * レスポンスインターセプター（エラー時）
  * 
@@ -34,10 +38,14 @@ export const handleResponse = (response: AxiosResponse): AxiosResponse => {
  * 共通のエラーハンドリングが必要な場合はここに記述します。
  */
 export const handleError = (error: AxiosError): Promise<never> => {
-    logger.error(`API Error: ${error.message}`, {
-        url: error.config?.url,
-        status: error.response?.status,
-        data: error.response?.data,
+    const appError = createErrorFromAxiosError(error);
+    
+    logger.error(`API Error: ${appError.message}`, {
+        code: appError.code,
+        status: appError.status,
+        data: appError.data,
+        originalUrl: error.config?.url,
     });
-    return Promise.reject(error);
+    
+    return Promise.reject(appError);
 };
