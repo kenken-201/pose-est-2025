@@ -22,7 +22,8 @@
   },
   "include": [
     "app/**/*",
-    "vite.config.ts"
+    "test/**/*",
+    "vitest.config.ts"
   ],
   "exclude": ["node_modules", "dist"]
 }

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
-import { isValidEmail, isValidUUID, isValidUrl } from './validation';
-import { formatFileSize, getFileExtension } from './file-utils';
-import { logger } from './logger';
+import { isValidEmail, isValidUUID, isValidUrl } from '@/lib/utils/validation';
+import { formatFileSize, getFileExtension } from '@/lib/utils/file-utils';
+import { logger } from '@/lib/utils/logger';
 
 describe('Validation Utilities', () => {
     it('should validate email', () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { VideoUploadRequestSchema, VideoProcessResponseSchema } from './types';
+import { VideoUploadRequestSchema, VideoProcessResponseSchema } from '@/lib/api/types';
 
 describe('API Types', () => {
     describe('VideoUploadRequestSchema', () => {
