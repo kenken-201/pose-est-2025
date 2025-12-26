@@ -1,7 +1,14 @@
+/**
+ * @fileoverview 動画アップロードクライアントサービス
+ *
+ * クライアントサイドから BFF (React Router v7 Resource Route) への
+ * 動画アップロードを処理するサービスを提供します。
+ */
 import { apiClient } from '../../api/client';
 import { VideoProcessResponse } from '../../api/types';
 import { validateVideoFile } from '../../utils/file-utils';
 import { AppAPIError } from '../../api/errors';
+import { APP_CONFIG } from '../../config/constants';
 
 /**
  * 動画アップロードサービスクライアント
@@ -17,6 +24,13 @@ export const videoUploader = {
      * @param onProgress - 進捗コールバック（0-100）
      * @returns 処理結果
      * @throws AppAPIError - バリデーションエラーまたはAPIエラー
+     *
+     * @example
+     * ```typescript
+     * const result = await videoUploader.uploadVideo(file, (progress) => {
+     *     console.log(`Upload: ${progress}%`);
+     * });
+     * ```
      */
     async uploadVideo(
         file: File,
@@ -36,18 +50,22 @@ export const videoUploader = {
         formData.append('video', file);
 
         // 2. アップロードリクエスト (BFFへ)
-        // Resource Route ("/api/upload") を呼び出す
-        const response = await apiClient.post<VideoProcessResponse>('/api/upload', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-            onUploadProgress: (progressEvent) => {
-                if (onProgress && progressEvent.total) {
-                    const percent = Math.round((progressEvent.loaded / progressEvent.total) * 100);
-                    onProgress(percent);
-                }
-            },
-        });
+        // Important Fix #4: Use APP_CONFIG instead of hardcoded endpoint
+        const response = await apiClient.post<VideoProcessResponse>(
+            APP_CONFIG.API.ENDPOINTS.BFF_UPLOAD,
+            formData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                onUploadProgress: (progressEvent) => {
+                    if (onProgress && progressEvent.total) {
+                        const percent = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+                        onProgress(percent);
+                    }
+                },
+            }
+        );
 
         return response.data;
     },

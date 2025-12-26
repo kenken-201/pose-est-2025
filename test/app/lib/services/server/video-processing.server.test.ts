@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { processVideoRequest } from '@/lib/services/server/video-processing.server';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { APP_CONFIG } from '@/lib/config/constants';
+import { AppAPIError } from '@/lib/api/errors';
 
 // Axiosモック
 vi.mock('axios');
@@ -18,6 +19,20 @@ describe('VideoProcessing Server Service', () => {
     });
 
     /**
+     * テスト用のRequestを作成するヘルパー関数
+     */
+    const createMockRequest = (includeVideo: boolean = true): Request => {
+        const formData = new FormData();
+        if (includeVideo) {
+            formData.append('video', new File(['dummy'], 'test.mp4', { type: 'video/mp4' }));
+        }
+        return new Request('http://localhost:3000/api/upload', {
+            method: 'POST',
+            body: formData,
+        });
+    };
+
+    /**
      * 正常系リクエスト転送の検証
      *
      * 動画データを含むFormDataを受け取った場合、
@@ -25,48 +40,57 @@ describe('VideoProcessing Server Service', () => {
      * 設定ファイル（APP_CONFIG）からのURL構築も検証します。
      */
     it('should forward request to backend API', async () => {
-        const formData = new FormData();
-        formData.append('video', new File(['dummy'], 'test.mp4', { type: 'video/mp4' }));
-
-        const mockRequest = new Request('http://localhost:3000/api/upload', {
-            method: 'POST',
-            body: formData,
-        });
-
         const mockResponse = {
-            data: { video_url: 'http://backend/video.mp4' },
+            data: { processedVideoUrl: 'http://backend/video.mp4' },
             status: 200,
         };
 
         vi.mocked(axios.post).mockResolvedValue(mockResponse);
 
-        const result = await processVideoRequest(mockRequest);
+        const result = await processVideoRequest(createMockRequest());
 
         expect(axios.post).toHaveBeenCalledWith(
-            `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.UPLOAD}`, // Expect full URL
-            expect.anything(), // body (FormData or Stream)
-            expect.anything()  // headers
+            `${APP_CONFIG.API.BASE_URL}${APP_CONFIG.API.ENDPOINTS.UPLOAD}`,
+            expect.anything(),
+            expect.objectContaining({
+                headers: { 'Content-Type': 'multipart/form-data' },
+                timeout: APP_CONFIG.API.TIMEOUT_MS,
+            })
         );
         expect(result).toEqual(mockResponse.data);
     });
 
     /**
-     * バックエンドエラー時のハンドリング検証
+     * バックエンドエラー時のハンドリング検証 (AppAPIError変換)
      *
-     * バックエンドAPIがエラーを返した場合、そのエラーが適切に
+     * バックエンドAPIがAxiosエラーを返した場合、AppAPIErrorに変換されて
      * 呼び出し元へ伝播されるかを確認します。
      */
-    it('should handle backend errors', async () => {
-        const formData = new FormData();
-        formData.append('video', new File(['dummy'], 'test.mp4', { type: 'video/mp4' }));
+    it('should transform axios errors to AppAPIError', async () => {
+        const axiosError = new AxiosError('Network Error', 'ERR_NETWORK');
+        vi.mocked(axios.post).mockRejectedValue(axiosError);
+        vi.mocked(axios.isAxiosError).mockReturnValue(true);
 
-        const mockRequest = new Request('http://localhost:3000/api/upload', {
-            method: 'POST',
-            body: formData,
-        });
+        await expect(processVideoRequest(createMockRequest())).rejects.toThrow(AppAPIError);
+    });
 
-        vi.mocked(axios.post).mockRejectedValue(new Error('Backend Error'));
+    /**
+     * 動画ファイル未指定時のバリデーションエラー検証
+     *
+     * FormDataに動画ファイルが含まれない場合、AppAPIErrorがスローされるか確認します。
+     */
+    it('should throw AppAPIError when video file is missing', async () => {
+        // 動画なしのRequestを作成
+        const requestWithoutVideo = createMockRequest(false);
 
-        await expect(processVideoRequest(mockRequest)).rejects.toThrow('Backend Error');
+        await expect(processVideoRequest(requestWithoutVideo)).rejects.toThrow(AppAPIError);
+        
+        // 別のRequestでメッセージを確認（Request bodyは一度しか消費できないため）
+        const anotherRequest = createMockRequest(false);
+        try {
+            await processVideoRequest(anotherRequest);
+        } catch (error) {
+            expect((error as AppAPIError).message).toBe('Video file is required');
+        }
     });
 });

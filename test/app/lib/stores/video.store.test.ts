@@ -69,17 +69,22 @@ describe('VideoStore', () => {
     /**
      * 完了状態更新の検証
      *
+     * 有効な状態遷移（IDLE → UPLOADING → COMPLETED）を経て、
      * setCompletedアクションを呼び出した場合、
      * - statusがCOMPLETEDになること
      * - resultに処理結果が格納されること
      * を確認します。
      */
-    it('should update status to COMPLETED with result', () => {
+    it('should update status to COMPLETED with result (via valid transition)', () => {
         const mockResult = {
             processedVideoUrl: 'http://example.com/video.mp4',
             metadata: { duration: 10, width: 1920, height: 1080 }
         };
 
+        // 有効な状態遷移: IDLE → UPLOADING → COMPLETED
+        act(() => {
+            useVideoStore.getState().setUploading(100);
+        });
         act(() => {
             useVideoStore.getState().setCompleted(mockResult);
         });
@@ -92,14 +97,19 @@ describe('VideoStore', () => {
     /**
      * エラー状態更新の検証
      *
+     * 有効な状態遷移（IDLE → UPLOADING → ERROR）を経て、
      * setErrorアクションを呼び出した場合、
      * - statusがERRORになること
      * - errorにエラーオブジェクトが格納されること
      * を確認します。
      */
-    it('should update status to ERROR with error object', () => {
+    it('should update status to ERROR with error object (via valid transition)', () => {
         const mockError = new Error('Test Error');
         
+        // 有効な状態遷移: IDLE → UPLOADING → ERROR
+        act(() => {
+            useVideoStore.getState().setUploading(50);
+        });
         act(() => {
             useVideoStore.getState().setError(mockError);
         });
@@ -110,15 +120,37 @@ describe('VideoStore', () => {
     });
 
     /**
+     * 無効な状態遷移の検証
+     *
+     * 無効な状態遷移（IDLE → COMPLETED）を試みた場合、
+     * 状態が変更されないことを確認します。
+     */
+    it('should reject invalid state transition (IDLE → COMPLETED)', () => {
+        const mockResult = {
+            processedVideoUrl: 'http://example.com/video.mp4',
+        };
+
+        // 無効な遷移を試みる
+        act(() => {
+            useVideoStore.getState().setCompleted(mockResult);
+        });
+
+        // 状態は IDLE のまま
+        const state = useVideoStore.getState();
+        expect(state.status).toBe(ProcessingStatus.IDLE);
+        expect(state.result).toBeNull();
+    });
+
+    /**
      * リセット機能の検証
      *
      * 状態を変更した後、resetアクションを呼び出すと
      * すべてのステートが初期値に戻ることを確認します。
      */
     it('should reset state to initial values', () => {
-        // First change state
+        // First change state via valid transition
         act(() => {
-            useVideoStore.getState().setStatus(ProcessingStatus.PROCESSING);
+            useVideoStore.getState().setUploading(50);
         });
         
         // Then reset

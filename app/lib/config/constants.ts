@@ -52,10 +52,12 @@ export const APP_CONFIG = {
         TIMEOUT_MS: getEnvNumber('VITE_API_TIMEOUT', 30000),
         /** APIエンドポイントのパス定義 */
         ENDPOINTS: {
-            /** 動画処理エンドポイント */
+            /** 動画処理エンドポイント (Backend) */
             UPLOAD: '/process-video/',
             /** ヘルスチェックエンドポイント */
             HEALTH: '/health',
+            /** BFFアップロードエンドポイント (Client → BFF) */
+            BFF_UPLOAD: '/api/upload',
         },
     },
 

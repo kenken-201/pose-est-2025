@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { videoUploader } from '@/lib/services/client/video-uploader.client';
 import { apiClient } from '@/lib/api/client';
 import { AppAPIError } from '@/lib/api/errors';
+import { APP_CONFIG } from '@/lib/config/constants';
 
 // APIクライアントのモック化
 vi.mock('@/lib/api/client', () => ({
@@ -25,8 +26,7 @@ describe('VideoUploader Client Service', () => {
     const mockFile = new File(['dummy content'], 'test.mp4', { type: 'video/mp4' });
     const mockResponse = {
         data: {
-            processId: '123',
-            videoUrl: 'http://example.com/video.mp4',
+            processedVideoUrl: 'http://example.com/video.mp4',
             metadata: { duration: 10, size: 100 }
         }
     };
@@ -34,17 +34,17 @@ describe('VideoUploader Client Service', () => {
     /**
      * 正常系のアップロード検証
      *
-     * 正しいエンドポイント (/api/upload) に対して、正しいFormDataとヘッダーで
-     * APIリクエストが送信されることを確認します。
+     * 正しいエンドポイント (APP_CONFIG.API.ENDPOINTS.BFF_UPLOAD) に対して、
+     * 正しいFormDataとヘッダーでAPIリクエストが送信されることを確認します。
      */
-    it('should upload video successfully', async () => {
-        // Setup success response
+    it('should upload video successfully using configured endpoint', async () => {
         vi.mocked(apiClient.post).mockResolvedValue(mockResponse);
 
         const result = await videoUploader.uploadVideo(mockFile);
 
+        // Important Fix #4: Verify APP_CONFIG endpoint is used
         expect(apiClient.post).toHaveBeenCalledWith(
-            '/api/upload', // Expecting call to BFF Resource Route
+            APP_CONFIG.API.ENDPOINTS.BFF_UPLOAD,
             expect.any(FormData),
             expect.objectContaining({
                 headers: { 'Content-Type': 'multipart/form-data' }
@@ -87,16 +87,26 @@ describe('VideoUploader Client Service', () => {
     });
 
     /**
-     * ファイルバリデーションの検証
+     * ファイルバリデーションの検証 (不正なMIMEタイプ)
      *
      * 不正なファイルタイプ（例：テキストファイル）が渡された場合、
      * APIリクエストを行う前にバリデーションエラーが発生することを確認します。
      */
     it('should validate file inputs before upload', async () => {
-        // Validation logic might be inside the service or handled before calling
-        // If the service is responsible:
         const invalidFile = new File([], 'test.txt', { type: 'text/plain' });
         
         await expect(videoUploader.uploadVideo(invalidFile)).rejects.toThrow('Invalid file type');
+    });
+
+    /**
+     * Important Fix #8: 0バイトファイルのバリデーション検証
+     *
+     * 空のファイル（0バイト）が渡された場合、
+     * バリデーションエラーが発生することを確認します。
+     */
+    it('should reject 0-byte files', async () => {
+        const emptyFile = new File([], 'empty.mp4', { type: 'video/mp4' });
+        
+        await expect(videoUploader.uploadVideo(emptyFile)).rejects.toThrow('File is empty');
     });
 });

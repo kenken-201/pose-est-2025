@@ -79,6 +79,19 @@ export const isVideoFile = (file: File): boolean => {
 };
 
 /**
+ * 許可された動画MIMEタイプかどうかを判定する
+ *
+ * APP_CONFIG.UPLOAD.ACCEPTED_TYPES に定義されたMIMEタイプと一致するか確認します。
+ *
+ * @param file - 判定対象のFileオブジェクト
+ * @returns 許可されたタイプの場合 true
+ */
+export const isAcceptedVideoType = (file: File): boolean => {
+    const acceptedTypes = Object.keys(APP_CONFIG.UPLOAD.ACCEPTED_TYPES);
+    return acceptedTypes.includes(file.type);
+};
+
+/**
  * バリデーション結果型
  */
 export interface ValidationResult {
@@ -89,7 +102,7 @@ export interface ValidationResult {
 /**
  * 動画ファイルのバリデーションを行う
  *
- * - ファイルタイプが動画であるか
+ * - ファイルタイプが許可されたMIMEタイプか
  * - ファイルサイズが制限値以下か
  * をチェックします。
  *
@@ -97,10 +110,13 @@ export interface ValidationResult {
  * @returns バリデーション結果 { valid: boolean, error?: string }
  */
 export const validateVideoFile = (file: File): ValidationResult => {
-    if (!isVideoFile(file)) {
+    // Important Fix #5: Use strict MIME type check with APP_CONFIG
+    const acceptedTypes = Object.keys(APP_CONFIG.UPLOAD.ACCEPTED_TYPES);
+    
+    if (!isAcceptedVideoType(file)) {
         return {
             valid: false,
-            error: 'Invalid file type. Please upload a video file.',
+            error: `Invalid file type. Accepted formats: ${acceptedTypes.join(', ')}.`,
         };
     }
 
@@ -108,6 +124,14 @@ export const validateVideoFile = (file: File): ValidationResult => {
         return {
             valid: false,
             error: `File size exceeds the limit of ${formatFileSize(APP_CONFIG.UPLOAD.MAX_SIZE_BYTES)}.`,
+        };
+    }
+
+    // Important Fix #8: Check for 0-byte file
+    if (file.size === 0) {
+        return {
+            valid: false,
+            error: 'File is empty. Please select a valid video file.',
         };
     }
 
