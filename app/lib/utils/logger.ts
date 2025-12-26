@@ -30,7 +30,8 @@ type LogLevel = 'debug' | 'info' | 'warn' | 'error';
  * logger.error('エラーが発生しました', error);
  * ```
  */
-class Logger {
+
+export class Logger {
     /** 現在のログレベル（これ以上のレベルのみ出力） */
     private level: LogLevel = 'info';
 

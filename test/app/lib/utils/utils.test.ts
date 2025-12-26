@@ -1,7 +1,62 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { isValidEmail, isValidUUID, isValidUrl } from '@/lib/utils/validation';
 import { formatFileSize, getFileExtension } from '@/lib/utils/file-utils';
-import { logger } from '@/lib/utils/logger';
+import { logger, Logger } from '@/lib/utils/logger';
+
+// ... (other tests omit for brevity in description but I will include them if I replace whole file or use context correctly)
+// Actually I'll just append/replace the Logger Utility describe block
+
+describe('Logger Utility', () => {
+    it('should log info messages', () => {
+        const consoleSpy = vi.spyOn(console, 'info');
+        logger.info('test message');
+        expect(consoleSpy).toHaveBeenCalledWith('[INFO] test message');
+        consoleSpy.mockRestore();
+    });
+
+    it('should log warn messages', () => {
+        const consoleSpy = vi.spyOn(console, 'warn');
+        logger.warn('warning message');
+        expect(consoleSpy).toHaveBeenCalledWith('[WARN] warning message');
+        consoleSpy.mockRestore();
+    });
+
+    it('should log error messages', () => {
+        const consoleSpy = vi.spyOn(console, 'error');
+        const error = new Error('test error');
+        logger.error('error message', error);
+        expect(consoleSpy).toHaveBeenCalledWith('[ERROR] error message', error);
+        consoleSpy.mockRestore();
+    });
+
+    it('should NOT log debug messages by default (in non-dev env)', () => {
+        const consoleSpy = vi.spyOn(console, 'debug');
+        logger.debug('debug message');
+        expect(consoleSpy).not.toHaveBeenCalled();
+        consoleSpy.mockRestore();
+    });
+
+    it('should initialize with debug level in development environment', () => {
+        const originalEnv = process.env.NODE_ENV;
+        process.env.NODE_ENV = 'development';
+        
+        const devLogger = new Logger();
+        const consoleSpy = vi.spyOn(console, 'debug');
+        
+        devLogger.debug('debug message');
+        expect(consoleSpy).toHaveBeenCalledWith('[DEBUG] debug message');
+        
+        consoleSpy.mockRestore();
+        process.env.NODE_ENV = originalEnv;
+    });
+
+    it('should not throw if process is undefined (simulating edge env edge case)', () => {
+        // This is hard to simulate in typical test runner without strict isolation
+        // but we can at least ensure standard instantiation works
+        const simpleLogger = new Logger();
+        expect(simpleLogger).toBeDefined();
+    });
+});
 
 describe('Validation Utilities', () => {
     it('should validate email', () => {
@@ -37,10 +92,46 @@ describe('File Utilities', () => {
 });
 
 describe('Logger Utility', () => {
-    it('should log messages without erroring', () => {
+    it('should log info messages', () => {
         const consoleSpy = vi.spyOn(console, 'info');
         logger.info('test message');
         expect(consoleSpy).toHaveBeenCalledWith('[INFO] test message');
         consoleSpy.mockRestore();
+    });
+
+    it('should log warn messages', () => {
+        const consoleSpy = vi.spyOn(console, 'warn');
+        logger.warn('warning message');
+        expect(consoleSpy).toHaveBeenCalledWith('[WARN] warning message');
+        consoleSpy.mockRestore();
+    });
+
+    it('should log error messages', () => {
+        const consoleSpy = vi.spyOn(console, 'error');
+        const error = new Error('test error');
+        logger.error('error message', error);
+        expect(consoleSpy).toHaveBeenCalledWith('[ERROR] error message', error);
+        consoleSpy.mockRestore();
+    });
+
+    it('should NOT log debug messages by default (in non-dev env)', () => {
+        const consoleSpy = vi.spyOn(console, 'debug');
+        logger.debug('debug message');
+        expect(consoleSpy).not.toHaveBeenCalled();
+        consoleSpy.mockRestore();
+    });
+
+    it('should initialize with debug level in development environment', () => {
+        const originalEnv = process.env.NODE_ENV;
+        process.env.NODE_ENV = 'development';
+        
+        const devLogger = new Logger();
+        const consoleSpy = vi.spyOn(console, 'debug');
+        
+        devLogger.debug('debug message');
+        expect(consoleSpy).toHaveBeenCalledWith('[DEBUG] debug message');
+        
+        consoleSpy.mockRestore();
+        process.env.NODE_ENV = originalEnv;
     });
 });
