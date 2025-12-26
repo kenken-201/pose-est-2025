@@ -6,7 +6,7 @@ import { AppAPIError } from '../../api/errors';
 /**
  * 動画アップロードサービスクライアント
  *
- * BFF（Remix Resource Route）に対して動画をアップロードし、
+ * BFF（React Router v7 Resource Route）に対して動画をアップロードし、
  * API経由で処理を開始します。アップロード進捗の監視が可能です。
  */
 export const videoUploader = {

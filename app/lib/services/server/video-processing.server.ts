@@ -5,14 +5,14 @@ import { VideoProcessResponse } from '../../api/types';
 /**
  * 動画処理リクエストをバックエンドに転送する (Server-side)
  *
- * Remix Actionから呼び出され、multipart/form-dataを解析し、
+ * React Router v7 Actionから呼び出され、multipart/form-dataを解析し、
  * バックエンドAPIへ転送します。
  *
- * @param request - Remix ActionのRequestオブジェクト
+ * @param request - React Router v7 ActionのRequestオブジェクト
  * @returns 処理結果
  */
 export const processVideoRequest = async (request: Request): Promise<VideoProcessResponse> => {
-    // 1. RemixのFormData解析
+    // 1. React Router v7のFormData解析
     const formData = await request.formData();
     const video = formData.get('video');
 
@@ -22,7 +22,7 @@ export const processVideoRequest = async (request: Request): Promise<VideoProces
 
     // 2. バックエンドへの転送用FormData作成
     // Note: Node.js環境でのaxios + FormDataの扱いに注意が必要だが、
-    // RemixのFileオブジェクトは標準Blob互換のため、そのままappendできる場合が多い。
+    // React Router v7のFileオブジェクトは標準Blob互換のため、そのままappendできる場合が多い。
     // 環境によっては 'form-data' パッケージが必要になることもある。
     const backendFormData = new FormData();
     backendFormData.append('video', video);

@@ -9,7 +9,7 @@ vi.mock('axios');
 /**
  * サーバーサイド動画処理サービス (processVideoRequest) のユニットテスト
  *
- * Remix Actionとして呼び出され、受信したリクエストを解析して
+ * React Router v7 Actionとして呼び出され、受信したリクエストを解析して
  * バックエンドAPIへ適切に転送（プロキシ）できるかを検証します。
  */
 describe('VideoProcessing Server Service', () => {
