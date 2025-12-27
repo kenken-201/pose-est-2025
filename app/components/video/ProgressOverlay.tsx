@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import { Loader2 } from 'lucide-react';
-import { ProcessingStatus } from '../../lib/stores/video.store';
+import { ProcessingStatus } from '@/lib/stores/video.store';
 
 interface ProgressOverlayProps {
     /** 処理ステータス */
@@ -24,15 +24,20 @@ export const ProgressOverlay: FC<ProgressOverlayProps> = ({
     message,
 }) => {
     // アクティブな状態でなければ何もレンダリングしない
-    if (
-        status !== ProcessingStatus.UPLOADING &&
-        status !== ProcessingStatus.PROCESSING
-    ) {
+    const isActive = status === ProcessingStatus.UPLOADING || status === ProcessingStatus.PROCESSING;
+    
+    if (!isActive) {
         return null;
     }
 
     return (
-        <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-lg animate-in fade-in duration-200">
+        <div 
+            className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-lg animate-in fade-in duration-200"
+            role="status"
+            aria-live="polite"
+            aria-busy={isActive}
+            data-testid="progress-overlay"
+        >
             <div className="w-64 space-y-4 text-center">
                 {status === ProcessingStatus.UPLOADING ? (
                     <>
@@ -45,6 +50,7 @@ export const ProgressOverlay: FC<ProgressOverlayProps> = ({
                             aria-valuenow={progress} 
                             aria-valuemin={0} 
                             aria-valuemax={100}
+                            aria-label="アップロード進捗"
                             className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden"
                         >
                             <div 
@@ -56,7 +62,7 @@ export const ProgressOverlay: FC<ProgressOverlayProps> = ({
                 ) : (
                     <>
                         <div className="flex justify-center">
-                            <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
+                            <Loader2 className="w-10 h-10 text-blue-500 animate-spin" aria-hidden="true" />
                         </div>
                         <p className="text-sm font-medium text-gray-700 animate-pulse">
                             {message || '動画を処理中...'}

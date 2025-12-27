@@ -9,8 +9,9 @@ import { AppAPIError } from '@/lib/api/errors';
  * ユースケース:
  * 1. エラーなし: error propがnullの場合は何も表示されないこと
  * 2. エラー表示: Errorオブジェクトのメッセージが表示されること
- * 3. AppAPIError表示: AppAPIErrorの場合、詳細なメッセージやステータスコードが表示されること
+ * 3. AppAPIError表示: isApiError=trueの場合、詳細なコードが表示されること
  * 4. インタラクション: リトライ、閉じるボタンが機能すること
+ * 5. アクセシビリティ: role="alert" と data-testid が設定されていること
  */
 describe('ErrorDisplay', () => {
     it('renders nothing when error is null', () => {
@@ -24,14 +25,24 @@ describe('ErrorDisplay', () => {
         
         expect(screen.getByText('エラーが発生しました')).toBeInTheDocument();
         expect(screen.getByText('一般的なエラーが発生しました')).toBeInTheDocument();
+        expect(screen.getByTestId('error-display')).toBeInTheDocument();
+        expect(screen.getByRole('alert')).toBeInTheDocument();
     });
 
-    it('renders AppAPIError message and code', () => {
+    it('renders AppAPIError message and code when isApiError is true', () => {
         const apiError = new AppAPIError('APIエラー', 'BAD_REQUEST', 400);
-        render(<ErrorDisplay error={apiError} />);
+        render(<ErrorDisplay error={apiError} isApiError={true} />);
         
         expect(screen.getByText('APIエラー')).toBeInTheDocument();
         expect(screen.getByText(/コード: BAD_REQUEST/)).toBeInTheDocument();
+    });
+
+    it('does not show error code when isApiError is false', () => {
+        const apiError = new AppAPIError('APIエラー', 'BAD_REQUEST', 400);
+        render(<ErrorDisplay error={apiError} isApiError={false} />);
+        
+        expect(screen.getByText('APIエラー')).toBeInTheDocument();
+        expect(screen.queryByText(/コード:/)).not.toBeInTheDocument();
     });
 
     it('calls onRetry when retry button is clicked', () => {
@@ -50,8 +61,6 @@ describe('ErrorDisplay', () => {
         const error = new Error('Dismiss test');
         render(<ErrorDisplay error={error} onDismiss={onDismiss} />);
         
-        // 閉じるボタン（通常は×アイコンなど）をRoleまたはLabelで取得
-        // ここでは aria-label="閉じる" を想定
         const closeButton = screen.getByLabelText(/閉じる/i);
         fireEvent.click(closeButton);
         

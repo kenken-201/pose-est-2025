@@ -1,11 +1,31 @@
-import type { FC } from 'react';
-import { useVideoStore, ProcessingStatus } from '../../lib/stores/video.store';
-import { useVideoProcessing } from '../../lib/hooks/useVideoProcessing';
+import type { FC, ReactNode } from 'react';
+import { useVideoStore, ProcessingStatus, isAppAPIError } from '@/lib/stores/video.store';
+import { useVideoProcessing } from '@/lib/hooks/useVideoProcessing';
 import { UploadDropzone } from './UploadDropzone';
 import { ProgressOverlay } from './ProgressOverlay';
 import { VideoPlayer } from './VideoPlayer';
 import { ErrorDisplay } from './ErrorDisplay';
-import { AppAPIError } from '../../lib/api/errors';
+import { VIDEO_CONTAINER_SIZE } from '@/lib/constants/ui';
+
+/**
+ * レイアウト安定化のためのラッパーコンポーネント
+ * Layout Shift (CLS) を防ぐために一貫したサイズを維持
+ */
+const ContainerWrapper: FC<{ 
+    children: ReactNode; 
+    fullWidth?: boolean;
+}> = ({ children, fullWidth = false }) => (
+    <div 
+        className={`
+            w-full mx-auto relative
+            ${fullWidth ? VIDEO_CONTAINER_SIZE.maxWidthResult : VIDEO_CONTAINER_SIZE.maxWidth}
+            ${VIDEO_CONTAINER_SIZE.height}
+        `}
+        data-testid="processing-container"
+    >
+        {children}
+    </div>
+);
 
 /**
  * 動画処理コンテナコンポーネント
@@ -23,7 +43,7 @@ export const ProcessingContainer: FC = () => {
     // IDLE状態: アップロード用のドロップゾーンを表示
     if (status === ProcessingStatus.IDLE) {
         return (
-            <div className="w-full max-w-xl mx-auto">
+            <ContainerWrapper>
                 <UploadDropzone 
                     onFileSelect={processVideo}
                     accept={{
@@ -32,31 +52,35 @@ export const ProcessingContainer: FC = () => {
                         'video/webm': ['.webm']
                     }} 
                 />
-            </div>
+            </ContainerWrapper>
         );
     }
 
     // ERROR状態: エラー表示とリトライボタン
     if (status === ProcessingStatus.ERROR) {
         return (
-            <div className="w-full max-w-xl mx-auto">
-                <ErrorDisplay 
-                    error={error as AppAPIError | Error} 
-                    onRetry={reset} 
-                />
-            </div>
+            <ContainerWrapper>
+                <div className="h-full flex items-center justify-center">
+                    <ErrorDisplay 
+                        error={error}
+                        isApiError={error ? isAppAPIError(error) : false}
+                        onRetry={reset} 
+                    />
+                </div>
+            </ContainerWrapper>
         );
     }
 
     // COMPLETED状態: 処理結果の動画プレイヤーを表示
-    if (status === ProcessingStatus.COMPLETED && result) {
+    if (status === ProcessingStatus.COMPLETED && result?.processedVideoUrl) {
         return (
-            <div className="w-full max-w-3xl mx-auto space-y-4">
+            <div className={`w-full ${VIDEO_CONTAINER_SIZE.maxWidthResult} mx-auto space-y-4`}>
                 <div className="bg-green-50 p-4 rounded-lg flex items-center justify-between">
                     <p className="text-green-800 font-medium">動画の処理が完了しました！</p>
                     <button 
                         onClick={reset}
                         className="text-sm text-green-700 hover:text-green-900 underline"
+                        type="button"
                     >
                         新しい動画をアップロード
                     </button>
@@ -71,13 +95,14 @@ export const ProcessingContainer: FC = () => {
     }
 
     // UPLOADING または PROCESSING 状態: 進捗オーバーレイを表示
-    // (UploadDropzoneの上に重ねるか、単独で表示するかはデザイン次第だが、ここでは単独表示エリアを確保)
     return (
-        <div className="w-full max-w-xl mx-auto relative h-64 bg-gray-50 rounded-lg border border-gray-200">
-             <ProgressOverlay 
-                status={status} 
-                progress={progress} 
-            />
-        </div>
+        <ContainerWrapper>
+            <div className="h-full bg-gray-50 rounded-lg border border-gray-200">
+                <ProgressOverlay 
+                    status={status} 
+                    progress={progress} 
+                />
+            </div>
+        </ContainerWrapper>
     );
 };

@@ -1,10 +1,12 @@
 import type { FC } from 'react';
 import { AlertCircle, RotateCcw, X } from 'lucide-react';
-import { AppAPIError } from '../../lib/api/errors';
+import { AppAPIError } from '@/lib/api/errors';
 
 interface ErrorDisplayProps {
     /** 表示するエラーオブジェクト */
     error: Error | AppAPIError | null;
+    /** AppAPIError かどうかのフラグ（型ガード結果を親から受け取る） */
+    isApiError?: boolean;
     /** 再試行時のコールバック */
     onRetry?: () => void;
     /** 閉じるボタン押下時のコールバック */
@@ -19,17 +21,21 @@ interface ErrorDisplayProps {
  */
 export const ErrorDisplay: FC<ErrorDisplayProps> = ({
     error,
+    isApiError = false,
     onRetry,
     onDismiss,
 }) => {
     if (!error) return null;
 
-    const isApiError = error instanceof AppAPIError;
     const errorMessage = error.message || '不明なエラーが発生しました';
-    const errorCode = isApiError ? (error as AppAPIError).code : undefined;
+    const errorCode = isApiError && error instanceof AppAPIError ? error.code : undefined;
 
     return (
-        <div className="rounded-md bg-red-50 p-4 border border-red-200 relative animate-in fade-in slide-in-from-top-2 duration-300">
+        <div 
+            className="rounded-md bg-red-50 p-4 border border-red-200 relative animate-in fade-in slide-in-from-top-2 duration-300"
+            data-testid="error-display"
+            role="alert"
+        >
             <div className="flex">
                 <div className="flex-shrink-0">
                     <AlertCircle className="h-5 w-5 text-red-400" aria-hidden="true" />

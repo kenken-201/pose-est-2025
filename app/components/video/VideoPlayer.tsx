@@ -1,8 +1,8 @@
 import type { FC } from 'react';
 
 interface VideoPlayerProps {
-    /** 動画ファイルのURL */
-    src: string | null;
+    /** 動画ファイルのURL (必須) */
+    src: string;
     /** コントロールを表示するかどうか */
     controls?: boolean;
     /** 自動再生するかどうか */
@@ -18,6 +18,8 @@ interface VideoPlayerProps {
  *
  * 処理済み動画の結果表示などに使用します。
  * 標準の <video> タグをラッパーしています。
+ * 
+ * @note src が存在する場合のみ親コンポーネントからレンダリングしてください。
  */
 export const VideoPlayer: FC<VideoPlayerProps> = ({
     src,
@@ -26,10 +28,6 @@ export const VideoPlayer: FC<VideoPlayerProps> = ({
     className = '',
     onEnded,
 }) => {
-    if (!src) {
-        return null;
-    }
-
     return (
         <video
             data-testid="video-player"
