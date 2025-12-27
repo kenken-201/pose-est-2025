@@ -7,7 +7,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-import { Suspense } from "react";
+
 import { AppProviders } from "./lib/providers/providers";
 
 import "./styles/globals.css";

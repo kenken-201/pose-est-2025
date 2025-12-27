@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import HomePage, { meta } from '@/routes/home';
+import HomePage, { meta } from '@/routes/_index';
 
 // ProcessingContainer のモック
 vi.mock('@/components/video/ProcessingContainer', () => ({
