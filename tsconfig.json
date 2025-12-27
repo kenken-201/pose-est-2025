@@ -18,7 +18,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./app/*"]
-    }
+    },
+    "types": ["@testing-library/jest-dom", "node"]
   },
   "include": [
     "app/**/*",
