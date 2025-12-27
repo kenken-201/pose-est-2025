@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import HomePage, { meta } from '@/routes/home';
+import HomePage, { meta } from '@/routes/_index';
 
 // ProcessingContainer のモック
 vi.mock('@/components/video/ProcessingContainer', () => ({
@@ -30,7 +30,9 @@ describe('HomePage', () => {
     it('renders page title and description', () => {
         render(<HomePage />);
         
-        expect(screen.getByText(/KenKen姿勢推定スポーツ分析/i)).toBeInTheDocument();
+        // ヘッダーやフッターにアプリ名が含まれるため、具体的に指定
+        expect(screen.getByRole('heading', { name: /KenKen姿勢推定スポーツ分析/i })).toBeInTheDocument();
+        expect(screen.getByText(/高度な姿勢推定AIを体験/i)).toBeInTheDocument();
         expect(screen.getByText(/動画をアップロードして/i)).toBeInTheDocument();
     });
 
