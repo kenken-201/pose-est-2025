@@ -7,6 +7,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
+import { Suspense } from "react";
 import { AppProviders } from "./lib/providers/providers";
 
 import "./styles/globals.css";
@@ -46,25 +47,13 @@ export default function App() {
   );
 }
 
-/**
- * SPAモードで必要なハイドレーションフォールバック
- * 初期HTMLレンダリング時に表示される
- */
-export function HydrateFallback() {
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <p>読み込み中...</p>
-    </div>
-  );
-}
+// HydrateFallback removed
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let message = "予期せぬエラーが発生しました";
   let details: string = "不明なエラー";
   let stack: string | undefined;
 
-  // 型安全な処理
-  // リントチェック回避のために厳密化、ここまでする必要があるかは後で見直す
   if (isRouteErrorResponse(error)) {
     message = error.status === 404 ? "ページが見つかりません" : "エラーが発生しました";
     details = error.data?.message || error.statusText || "エラーの詳細はありません";
