@@ -89,6 +89,11 @@ app/
 └── entry.client.tsx    # クライアントサイドエントリー
 ```
 
+## デモ
+
+ページ表示時は以下のような想定です。（現在はlocalhostでしか動かない）
+<img width="1071" height="691" alt="スクリーンショット 2025-12-27 20 19 41" src="https://github.com/user-attachments/assets/cc8b76f6-81be-4e1f-8326-b60a85700e30" />
+
 ## 🚢 Deployment
 
 本プロジェクトは **Cloudflare Pages** へのデプロイを想定しています。
