@@ -251,9 +251,9 @@ mkdir -p app/{components/{video,ui,layout},lib/{api,services,utils,hooks,stores}
 
 #### ⬜ タスク 7.5-3: ErrorDisplay コンポーネントの拡張
 
-- [ ] **実装**: `ErrorDisplay.tsx` でエラーコードに基づくメッセージ出し分け
-- [ ] **実装**: ファイル大きさ超過時は「最大100MBまで」のようなガイダンス表示
-- [ ] **テスト**: 各エラーパターンでの表示テスト
+- [ ] **7.5-3a**: `ErrorDisplay` の更新 (`userMessage` の優先表示)
+- [ ] **7.5-3b**: `ErrorDisplay.test.tsx` の更新（日本語メッセージ表示検証）
+- [ ] **テスト実行**: 全テストがパスすることを確認
 - [ ] **🛑 [Review] UI/UX 確認**
 
 #### ⬜ タスク 7.5-4: 環境変数とデプロイ設定
