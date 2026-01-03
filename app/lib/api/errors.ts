@@ -45,10 +45,10 @@ export const createErrorFromAxiosError = (error: AxiosError): AppAPIError => {
         const parseResult = ApiErrorSchema.safeParse(data);
         if (parseResult.success) {
             return new AppAPIError(
-                parseResult.data.error, // message is in 'error' field
-                parseResult.data.code || 'API_ERROR',
+                parseResult.data.error.message,
+                parseResult.data.error.code,
                 status,
-                parseResult.data.details
+                parseResult.data.error.details
             );
         }
 

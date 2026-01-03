@@ -50,9 +50,11 @@ describe('API Error Handling', () => {
 
         it('should parse structured error response correctly', () => {
             const responseData = {
-                error: 'Invalid input',
-                code: 'VALIDATION_ERROR',
-                details: { field: 'required' }
+                error: {
+                    message: 'Invalid input',
+                    code: 'VALIDATION_ERROR',
+                    details: { field: 'required' }
+                }
             };
             
             const axiosError = new AxiosError(
@@ -75,7 +77,7 @@ describe('API Error Handling', () => {
             expect(appError.code).toBe('VALIDATION_ERROR');
             expect(appError.message).toBe('Invalid input');
             expect(appError.status).toBe(400);
-            expect(appError.data).toEqual(responseData.details);
+            expect(appError.data).toEqual(responseData.error.details);
         });
 
         it('should handle network errors', () => {

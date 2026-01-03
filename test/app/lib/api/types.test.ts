@@ -9,13 +9,13 @@ describe('API Types', () => {
             // but assuming jsdom or happy-dom is used, this should work.
             // For now, we rely on the schema definition logic.
 
-            const result = VideoUploadRequestSchema.safeParse({ video: file });
+            const result = VideoUploadRequestSchema.safeParse({ file: file });
             expect(result.success).toBe(true);
         });
 
         it('should reject invalid file types', () => {
             const file = new File(['dummy'], 'test.txt', { type: 'text/plain' });
-            const result = VideoUploadRequestSchema.safeParse({ video: file });
+            const result = VideoUploadRequestSchema.safeParse({ file: file });
             expect(result.success).toBe(false);
             if (!result.success) {
                 expect(result.error.errors[0].message).toContain('対応していないファイル形式');
@@ -26,17 +26,36 @@ describe('API Types', () => {
     describe('VideoProcessResponseSchema', () => {
         it('should validate valid response data', () => {
             const data = {
-                processedVideoUrl: 'https://example.com/video.mp4',
-                processingTimeMs: 1234,
-                metadata: { width: 1920, height: 1080 }
+                signed_url: 'https://example.com/video.mp4',
+                video_meta: {
+                    width: 1920,
+                    height: 1080,
+                    fps: 30,
+                    duration_sec: 10,
+                    has_audio: false,
+                },
+                total_poses: 150,
+                processing_time_sec: 2.5,
             };
             const result = VideoProcessResponseSchema.safeParse(data);
+            if (!result.success) {
+                console.error('Validation failed:', JSON.stringify(result.error, null, 2));
+            }
             expect(result.success).toBe(true);
         });
 
         it('should reject invalid URLs', () => {
             const data = {
-                processedVideoUrl: 'not-a-url',
+                signed_url: 'not-a-url',
+                video_meta: {
+                    width: 1920,
+                    height: 1080,
+                    fps: 30,
+                    duration_sec: 10,
+                    has_audio: false,
+                },
+                total_poses: 150,
+                processing_time_sec: 2.5,
             };
             const result = VideoProcessResponseSchema.safeParse(data);
             expect(result.success).toBe(false);
