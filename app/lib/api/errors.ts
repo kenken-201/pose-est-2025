@@ -49,7 +49,7 @@ export type ClientErrorCode =
 export type ErrorCode = BackendErrorCode | ClientErrorCode;
 
 /** エラーコード → ユーザー向けメッセージのマッピング */
-export const ERROR_MESSAGES: Record<string, string> = {
+export const ERROR_MESSAGES: Record<ErrorCode, string> = {
     // Backend errors
     VIDEO_TOO_SHORT: '動画が短すぎます。3秒以上の動画をアップロードしてください。',
     VIDEO_TOO_LONG: '動画が長すぎます。7分以内の動画をアップロードしてください。',
@@ -73,7 +73,7 @@ export const ERROR_MESSAGES: Record<string, string> = {
  * @returns ユーザー向けの日本語メッセージ
  */
 export const getUserFriendlyMessage = (code: string): string => {
-    return ERROR_MESSAGES[code] ?? ERROR_MESSAGES.UNKNOWN_ERROR;
+    return ERROR_MESSAGES[code as ErrorCode] ?? ERROR_MESSAGES.UNKNOWN_ERROR;
 };
 
 /**

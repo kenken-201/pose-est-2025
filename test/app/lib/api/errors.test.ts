@@ -135,9 +135,7 @@ describe('API Error Handling', () => {
     /**
      * エラーメッセージマッピングのテスト
      */
-    /**
-     * エラーメッセージマッピングのテスト
-     */
+
     describe('Error Message Mapping', () => {
         it('should return correct Japanese message for backend error codes', () => {
             expect(getUserFriendlyMessage('VIDEO_TOO_SHORT')).toContain('動画が短すぎます');
