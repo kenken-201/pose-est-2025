@@ -226,10 +226,17 @@ mkdir -p app/{components/{video,ui,layout},lib/{api,services,utils,hooks,stores}
 
 #### ⬜ タスク 7.5-1: 設定と型定義の更新
 
-- [ ] **設計レビュー**: 新 API 仕様とフロントエンドの差異を確認、変更計画を提示
-- [ ] **実装**: `constants.ts` のエンドポイント更新 (`/api/v1/process`, `/api/v1/health`)
-- [ ] **実装**: `types.ts` の Zod スキーマ更新 (`signed_url`, `video_meta`, etc.)
-- [ ] **テスト**: スキーマバリデーションテストの更新
+- [ ] **7.5-1a**: `constants.ts` エンドポイント更新 (`/api/v1/process`, `/api/v1/health`)
+- [ ] **7.5-1b**: `types.ts` Zod スキーマ更新
+  - [ ] `ApiErrorSchema` をネスト形式 (`{ error: { code, message } }`) に変更
+  - [ ] `VideoMetaResponseSchema` 新規作成
+  - [ ] `VideoProcessResponseSchema` を新仕様 (`signed_url`, `video_meta`, etc.) に更新
+  - [ ] `HealthResponseSchema` 新規作成
+- [ ] **7.5-1c**: `posture-estimation.ts` 更新 (FormData キー `video` → `file`)
+- [ ] **7.5-1d**: `errors.ts` 更新 (新エラー形式のパース対応)
+- [ ] **7.5-1e**: `ProcessingContainer.tsx` 参照更新 (`processedVideoUrl` → `signed_url`)
+- [ ] **7.5-1f**: モックデータと既存テストの更新
+- [ ] **テスト実行**: 全テストがパスすることを確認
 - [ ] **🛑 [Review] 型定義変更の確認**
 
 #### ⬜ タスク 7.5-2: エラーコード対応表の実装
