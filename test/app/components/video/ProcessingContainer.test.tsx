@@ -91,7 +91,12 @@ describe('ProcessingContainer', () => {
         mockStoreState.mockReturnValue({
             status: ProcessingStatus.COMPLETED,
             progress: 100,
-            result: { signed_url: 'http://example.com/result.mp4', video_meta: {}, total_poses: 0, processing_time_sec: 0 } as any,
+            result: { 
+                signed_url: 'http://example.com/result.mp4', 
+                video_meta: { width: 1920, height: 1080, fps: 30, duration_sec: 10, has_audio: false }, 
+                total_poses: 0, 
+                processing_time_sec: 0 
+            },
             error: null,
         });
 

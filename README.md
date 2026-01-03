@@ -38,8 +38,7 @@
 環境構築セットアップスクリプトを実行してください:
 
 ```bash
-chmod +x setup.sh
-./setup.sh
+./scripts/setup.sh
 ```
 
 ### Development
@@ -52,21 +51,24 @@ npm run dev
 
 アプリケーションは `http://localhost:3000` で起動します。
 
-## ✅ Testing
+## ✅ Testing & Quality Checks
 
-以下のスクリプトで、Lintチェック、型チェック、テストカバレッジ測定を一括実行できます:
+### 一括品質チェック（推奨）
+
+以下のスクリプトで、TypeCheck, Lint, Test, Buildを一括実行できます:
 
 ```bash
-chmod +x test.sh
-./test.sh
+./scripts/quality-check.sh        # 全チェック実行
+./scripts/quality-check.sh --fix  # Lint自動修正付き
 ```
 
-個別に実行する場合:
+### 個別実行
 
-- `npm run lint:fix` : コードスタイルの修正
 - `npm run typecheck` : TypeScript型チェック
+- `npm run lint:fix` : コードスタイルの修正
 - `npm run test` : テスト実行
 - `npm run test:coverage` : カバレッジレポート生成
+- `npm run build` : プロダクションビルド
 
 ## 📁 Project Structure
 

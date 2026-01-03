@@ -73,12 +73,20 @@ export type VideoUploadRequest = z.infer<typeof VideoUploadRequestSchema>;
 
 /**
  * 動画メタデータのスキーマ
+ *
+ * 処理された動画の解像度、フレームレート、長さなどの情報を含みます。
+ * バックエンドで動画をデコードした際に取得される技術的なメタデータです。
  */
 export const VideoMetaResponseSchema = z.object({
+    /** 動画の幅（ピクセル） */
     width: z.number().int(),
+    /** 動画の高さ（ピクセル） */
     height: z.number().int(),
+    /** フレームレート（fps） */
     fps: z.number(),
+    /** 動画の長さ（秒） */
     duration_sec: z.number(),
+    /** 音声トラックの有無 */
     has_audio: z.boolean(),
 });
 
