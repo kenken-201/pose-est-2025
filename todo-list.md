@@ -239,15 +239,15 @@ mkdir -p app/{components/{video,ui,layout},lib/{api,services,utils,hooks,stores}
 - [x] **テスト実行**: 全テストがパスすることを確認
 - [x] **🛑 [Review] 型定義変更の確認**
 
-#### ⬜ タスク 7.5-2: エラーコード対応表の実装
+#### ✅ タスク 7.5-2: エラーコード対応表の実装
 
-- [ ] **7.5-2a**: エラーコード型定義の追加 (`BackendErrorCode`, `ClientErrorCode`, `ErrorCode`)
-- [ ] **7.5-2b**: エラーメッセージマッピングテーブルの実装 (`ERROR_MESSAGES`)
-- [ ] **7.5-2c**: ユーザー向けメッセージ取得ヘルパーの実装 (`getUserFriendlyMessage`)
-- [ ] **7.5-2d**: `AppAPIError` に `userMessage` ゲッターを追加
-- [ ] **7.5-2e**: 単体テストの追加（既知コード、未知コード、userMessage）
-- [ ] **テスト実行**: 全テストがパスすることを確認
-- [ ] **🛑 [Review] エラーメッセージ内容の確認**
+- [x] **7.5-2a**: エラーコード型定義の追加 (`BackendErrorCode`, `ClientErrorCode`, `ErrorCode`)
+- [x] **7.5-2b**: エラーメッセージマッピングテーブルの実装 (`ERROR_MESSAGES`)
+- [x] **7.5-2c**: ユーザー向けメッセージ取得ヘルパーの実装 (`getUserFriendlyMessage`)
+- [x] **7.5-2d**: `AppAPIError` に `userMessage` ゲッターを追加
+- [x] **7.5-2e**: 単体テストの追加（既知コード、未知コード、userMessage）
+- [x] **テスト実行**: 全テストがパスすることを確認
+- [x] **🛑 [Review] エラーメッセージ内容の確認**
 
 #### ⬜ タスク 7.5-3: ErrorDisplay コンポーネントの拡張
 
