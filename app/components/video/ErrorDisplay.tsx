@@ -27,7 +27,8 @@ export const ErrorDisplay: FC<ErrorDisplayProps> = ({
 }) => {
     if (!error) return null;
 
-    const errorMessage = error.message || '不明なエラーが発生しました';
+    const errorMessage =
+        error instanceof AppAPIError ? error.userMessage : error.message || '不明なエラーが発生しました';
     const errorCode = isApiError && error instanceof AppAPIError ? error.code : undefined;
 
     return (

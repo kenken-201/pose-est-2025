@@ -249,12 +249,12 @@ mkdir -p app/{components/{video,ui,layout},lib/{api,services,utils,hooks,stores}
 - [x] **テスト実行**: 全テストがパスすることを確認
 - [x] **🛑 [Review] エラーメッセージ内容の確認**
 
-#### ⬜ タスク 7.5-3: ErrorDisplay コンポーネントの拡張
+#### ✅ タスク 7.5-3: ErrorDisplay コンポーネントの拡張
 
-- [ ] **7.5-3a**: `ErrorDisplay` の更新 (`userMessage` の優先表示)
-- [ ] **7.5-3b**: `ErrorDisplay.test.tsx` の更新（日本語メッセージ表示検証）
-- [ ] **テスト実行**: 全テストがパスすることを確認
-- [ ] **🛑 [Review] UI/UX 確認**
+- [x] **7.5-3a**: `ErrorDisplay` の更新 (`userMessage` の優先表示)
+- [x] **7.5-3b**: `ErrorDisplay.test.tsx` の更新（日本語メッセージ表示検証）
+- [x] **テスト実行**: 全テストがパスすることを確認
+- [x] **🛑 [Review] UI/UX 確認**
 
 #### ⬜ タスク 7.5-4: 環境変数とデプロイ設定
 

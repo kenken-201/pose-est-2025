@@ -27,7 +27,7 @@ vi.mock('@/lib/stores/video.store', () => ({
         COMPLETED: 'COMPLETED',
         ERROR: 'ERROR',
     },
-    isAppAPIError: (error: unknown) => error instanceof AppAPIError,
+    isAppAPIError: (error: unknown) => (error as { name?: string })?.name === 'AppAPIError',
 }));
 
 /**
@@ -111,11 +111,11 @@ describe('ProcessingContainer', () => {
             status: ProcessingStatus.ERROR,
             progress: 0,
             result: null,
-            error: new AppAPIError('テストエラー', 'TEST_ERROR', 400),
+            error: new AppAPIError('Video too short', 'VIDEO_TOO_SHORT', 400),
         });
 
         render(<ProcessingContainer />);
-        expect(screen.getByText('テストエラー')).toBeInTheDocument();
+        expect(screen.getByText(/動画が短すぎます/)).toBeInTheDocument();
         expect(screen.getByTestId('error-display')).toBeInTheDocument();
     });
 
