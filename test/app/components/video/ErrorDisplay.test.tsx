@@ -29,8 +29,8 @@ describe('ErrorDisplay', () => {
         expect(screen.getByRole('alert')).toBeInTheDocument();
     });
 
-    it('renders AppAPIError userMessage and code when isApiError is true', () => {
-        // VIDEO_TOO_SHORT maps to "動画が短すぎます..." in errors.ts
+    it('AppAPIError の場合、userMessage（日本語メッセージ）とエラーコードを表示する', () => {
+        // VIDEO_TOO_SHORT は errors.ts で「動画が短すぎます...」にマッピングされている
         const apiError = new AppAPIError('Original API Message', 'VIDEO_TOO_SHORT', 400);
         render(<ErrorDisplay error={apiError} isApiError={true} />);
         
@@ -39,12 +39,12 @@ describe('ErrorDisplay', () => {
         expect(screen.getByText(/コード: VIDEO_TOO_SHORT/)).toBeInTheDocument();
     });
 
-    it('does not show error code when isApiError is false', () => {
+    it('isApiError が false の場合、エラーコードは表示しない（userMessage は表示される）', () => {
         const apiError = new AppAPIError('APIエラー', 'BAD_REQUEST', 400);
         render(<ErrorDisplay error={apiError} isApiError={false} />);
         
-        // userMessage will still be used because it is an instance of AppAPIError
-        // But code should not be shown
+        // AppAPIError のインスタンスであるため userMessage は表示される
+        // しかし isApiError=false のため、エラーコードは非表示
         expect(screen.queryByText(/コード:/)).not.toBeInTheDocument();
     });
 

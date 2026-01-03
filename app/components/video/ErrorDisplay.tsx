@@ -27,8 +27,11 @@ export const ErrorDisplay: FC<ErrorDisplayProps> = ({
 }) => {
     if (!error) return null;
 
+    // AppAPIError の場合はユーザー向け日本語メッセージ（userMessage）を優先使用
+    // 通常の Error の場合は message プロパティをそのまま表示
     const errorMessage =
         error instanceof AppAPIError ? error.userMessage : error.message || '不明なエラーが発生しました';
+    // エラーコードは isApiError フラグが明示的に true の場合のみ表示
     const errorCode = isApiError && error instanceof AppAPIError ? error.code : undefined;
 
     return (
