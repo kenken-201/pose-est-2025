@@ -241,9 +241,12 @@ mkdir -p app/{components/{video,ui,layout},lib/{api,services,utils,hooks,stores}
 
 #### ⬜ タスク 7.5-2: エラーコード対応表の実装
 
-- [ ] **設計レビュー**: エラーコード → ユーザー向けメッセージのマッピング案提示
-- [ ] **実装**: `errors.ts` にエラーコード変換ヘルパー追加
-- [ ] **テスト**: エラーコードごとのメッセージ生成テスト
+- [ ] **7.5-2a**: エラーコード型定義の追加 (`BackendErrorCode`, `ClientErrorCode`, `ErrorCode`)
+- [ ] **7.5-2b**: エラーメッセージマッピングテーブルの実装 (`ERROR_MESSAGES`)
+- [ ] **7.5-2c**: ユーザー向けメッセージ取得ヘルパーの実装 (`getUserFriendlyMessage`)
+- [ ] **7.5-2d**: `AppAPIError` に `userMessage` ゲッターを追加
+- [ ] **7.5-2e**: 単体テストの追加（既知コード、未知コード、userMessage）
+- [ ] **テスト実行**: 全テストがパスすることを確認
 - [ ] **🛑 [Review] エラーメッセージ内容の確認**
 
 #### ⬜ タスク 7.5-3: ErrorDisplay コンポーネントの拡張
