@@ -1,0 +1,12 @@
+# =============================================================================
+# Wrangler Configuration for Cloudflare Pages
+# =============================================================================
+# React Router v7 ビルド出力を静的アセットとしてデプロイします。
+# SSR は使用せず、SPA (Single Page Application) モードで動作します。
+
+name = "pose-est-frontend"
+compatibility_date = "2026-01-06"
+
+# 静的アセットのディレクトリ（React Router v7 のビルド出力先）
+[assets]
+directory = "./build/client"
