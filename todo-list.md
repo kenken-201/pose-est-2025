@@ -316,13 +316,17 @@ mkdir -p app/{components/{video,ui,layout},lib/{api,services,utils,hooks,stores}
 
 **背景**: React Router v7 は SSR が必要なため、静的ホスティング (Pages) ではなく Cloudflare Workers を使用する。
 
-##### 9-2a: React Router Cloudflare Adapter 導入
+##### ✅ 9-2a: Cloudflare Workers SSR マイグレーション (Implementation)
 
-- [ ] `@react-router/cloudflare` パッケージのインストール
-- [ ] `vite.config.ts` に Cloudflare アダプター設定を追加
-- [ ] `react-router.config.ts` の更新（必要に応じて）
-- [ ] `wrangler.toml` の作成（Workers 用）
-- [ ] ローカルでの動作確認 (`wrangler dev`)
+- [x] `@cloudflare/vite-plugin`, `wrangler` パッケージのインストール
+- [x] `vite.config.ts` に Cloudflare アダプター設定を追加
+- [x] `react-router.config.ts` の更新 (SSR + v8_viteEnvironmentApi)
+- [x] `wrangler.jsonc` の作成（Workers 設定）
+- [x] `workers/app.ts` の作成（Worker エントリーポイント）
+- [x] ローカルでの動作確認 (`npm run preview`)
+- [x] Cloudflare へのデプロイ確認 (`npm run deploy`)
+
+##### ⬜ 9-2b: Workers プロジェクト設定 (Infrastructure)
 
 ##### 9-2b: Workers プロジェクト設定
 
