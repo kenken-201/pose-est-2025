@@ -11,7 +11,10 @@ import { createRequestHandler } from "react-router";
  * バインディング（KV, R2, D1 など）を使用する場合はここに追加
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-type Env = Record<string, unknown>;
+type Env = {
+  VITE_API_BASE_URL: string;
+  VITE_APP_NAME: string;
+};
 
 /**
  * React Router のリクエストハンドラーを作成

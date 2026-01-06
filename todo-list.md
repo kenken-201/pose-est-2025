@@ -312,7 +312,7 @@ mkdir -p app/{components/{video,ui,layout},lib/{api,services,utils,hooks,stores}
 - [x] 環境変数サンプル設定 (`.env.example`)
 - [x] SSR モードでの正常動作確認 (`npm run dev`)
 
-#### ⬜ タスク 9-2: Cloudflare Workers デプロイ設定
+#### ✅ タスク 9-2: Cloudflare Workers デプロイ設定
 
 **背景**: React Router v7 は SSR が必要なため、静的ホスティング (Pages) ではなく Cloudflare Workers を使用する。
 
@@ -326,22 +326,20 @@ mkdir -p app/{components/{video,ui,layout},lib/{api,services,utils,hooks,stores}
 - [x] ローカルでの動作確認 (`npm run preview`)
 - [x] Cloudflare へのデプロイ確認 (`npm run deploy`)
 
-##### ⬜ 9-2b: Workers プロジェクト設定 (Infrastructure)
+##### ✅ 9-2b: Workers プロジェクト設定 (Infrastructure)
 
-##### 9-2b: Workers プロジェクト設定
+- [x] Cloudflare Pages モジュールの無効化 (Terraform)
+- [x] 環境変数設定 (`wrangler.jsonc` に `vars` 追加)
+- [x] `workers/app.ts` の型定義更新 (Env)
+- [x] デプロイテスト (`npm run deploy`)
 
-- [ ] Cloudflare Dashboard で Workers プロジェクト作成（または既存の Pages を Workers に変換）
-- [ ] GitHub 連携設定
-- [ ] 環境変数設定 (`VITE_API_URL` など)
-- [ ] デプロイテスト
-
-##### 9-2c: ブランチ連携とプレビュー
+##### ⬜ 9-2c: ブランチ連携とプレビュー
 
 - [ ] `develop` ブランチ → プレビュー環境
 - [ ] `main` ブランチ → 本番環境
 - [ ] プレビュー URL の発行確認
 
-##### 9-2d: カスタムドメイン設定
+##### ⬜ 9-2d: カスタムドメイン設定
 
 - [ ] `dev.kenken-pose-est.online` → 開発環境 Workers
 - [ ] `kenken-pose-est.online` → 本番環境 Workers
