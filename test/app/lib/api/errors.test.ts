@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
-import { AppAPIError, isAppAPIError, createErrorFromAxiosError } from '@/lib/api/errors';
+import { AppAPIError, isAppAPIError, createErrorFromAxiosError, getUserFriendlyMessage } from '@/lib/api/errors';
 
 /**
  * APIエラーハンドリングのテスト
@@ -50,9 +50,11 @@ describe('API Error Handling', () => {
 
         it('should parse structured error response correctly', () => {
             const responseData = {
-                error: 'Invalid input',
-                code: 'VALIDATION_ERROR',
-                details: { field: 'required' }
+                error: {
+                    message: 'Invalid input',
+                    code: 'VALIDATION_ERROR',
+                    details: { field: 'required' }
+                }
             };
             
             const axiosError = new AxiosError(
@@ -75,7 +77,7 @@ describe('API Error Handling', () => {
             expect(appError.code).toBe('VALIDATION_ERROR');
             expect(appError.message).toBe('Invalid input');
             expect(appError.status).toBe(400);
-            expect(appError.data).toEqual(responseData.details);
+            expect(appError.data).toEqual(responseData.error.details);
         });
 
         it('should handle network errors', () => {
@@ -127,6 +129,34 @@ describe('API Error Handling', () => {
             expect(appError.code).toBe('UNKNOWN_ERROR');
             expect(appError.status).toBe(500);
             expect(appError.message).toBe('Unknown Error');
+        });
+    });
+
+    /**
+     * エラーメッセージマッピングのテスト
+     */
+
+    describe('Error Message Mapping', () => {
+        it('should return correct Japanese message for backend error codes', () => {
+            expect(getUserFriendlyMessage('VIDEO_TOO_SHORT')).toContain('動画が短すぎます');
+            expect(getUserFriendlyMessage('FILE_TOO_LARGE')).toContain('ファイルサイズが大きすぎます');
+            expect(getUserFriendlyMessage('MODEL_INFERENCE_ERROR')).toContain('姿勢推定処理中にエラーが発生しました');
+        });
+
+        it('should return correct Japanese message for client error codes', () => {
+            expect(getUserFriendlyMessage('NETWORK_ERROR')).toContain('ネットワーク接続を確認してください');
+            expect(getUserFriendlyMessage('TIMEOUT_ERROR')).toContain('リクエストがタイムアウトしました');
+            expect(getUserFriendlyMessage('VALIDATION_ERROR')).toContain('入力内容に問題があります');
+        });
+
+        it('should return fallback message for unknown codes', () => {
+            expect(getUserFriendlyMessage('NON_EXISTENT_CODE')).toContain('予期しないエラーが発生しました');
+        });
+
+        it('AppAPIError.userMessage getter should return mapped message', () => {
+            const error = new AppAPIError('Original Message', 'VIDEO_TOO_LONG', 400);
+            expect(error.userMessage).toContain('動画が長すぎます');
+            expect(error.message).toBe('Original Message'); // 元の英語メッセージは保持される
         });
     });
 });

@@ -41,7 +41,12 @@ describe('VideoProcessing Server Service', () => {
      */
     it('should forward request to backend API', async () => {
         const mockResponse = {
-            data: { processedVideoUrl: 'http://backend/video.mp4' },
+            data: {
+                signed_url: 'http://backend/video.mp4',
+                video_meta: { width: 1920, height: 1080, fps: 30, duration_sec: 10, has_audio: true },
+                total_poses: 100,
+                processing_time_sec: 5.0,
+            },
             status: 200,
         };
 

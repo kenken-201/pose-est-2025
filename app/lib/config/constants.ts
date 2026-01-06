@@ -53,9 +53,9 @@ export const APP_CONFIG = {
         /** APIエンドポイントのパス定義 */
         ENDPOINTS: {
             /** 動画処理エンドポイント (Backend) */
-            UPLOAD: '/process-video/',
+            UPLOAD: '/api/v1/process',
             /** ヘルスチェックエンドポイント */
-            HEALTH: '/health',
+            HEALTH: '/api/v1/health',
             /** BFFアップロードエンドポイント (Client → BFF) */
             BFF_UPLOAD: '/api/upload',
         },

@@ -14,12 +14,15 @@ export const mockUploadVideo = async (file: File): Promise<VideoProcessResponse>
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     return {
-        processedVideoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-        processingTimeMs: 1540,
-        metadata: {
-            originalName: file.name,
-            size: file.size,
-            mock: true,
+        signed_url: URL.createObjectURL(file), // ブラウザで再生可能な一時URL
+        video_meta: {
+            width: 1920,
+            height: 1080,
+            fps: 30,
+            duration_sec: 10,
+            has_audio: false,
         },
+        total_poses: 150,
+        processing_time_sec: 2.5,
     };
 };

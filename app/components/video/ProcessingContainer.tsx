@@ -72,7 +72,7 @@ export const ProcessingContainer: FC = () => {
     }
 
     // COMPLETED状態: 処理結果の動画プレイヤーを表示
-    if (status === ProcessingStatus.COMPLETED && result?.processedVideoUrl) {
+    if (status === ProcessingStatus.COMPLETED && result?.signed_url) {
         return (
             <div className={`w-full ${VIDEO_CONTAINER_SIZE.maxWidthResult} mx-auto space-y-4`}>
                 <div className="bg-green-50 p-4 rounded-lg flex items-center justify-between">
@@ -86,9 +86,10 @@ export const ProcessingContainer: FC = () => {
                     </button>
                 </div>
                 <VideoPlayer 
-                    src={result.processedVideoUrl} 
-                    controls 
-                    autoPlay 
+                    src={result.signed_url}
+                    autoPlay
+                    controls
+                    className="w-full h-full object-contain"
                 />
             </div>
         );

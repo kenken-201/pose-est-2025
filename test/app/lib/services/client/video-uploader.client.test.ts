@@ -26,8 +26,10 @@ describe('VideoUploader Client Service', () => {
     const mockFile = new File(['dummy content'], 'test.mp4', { type: 'video/mp4' });
     const mockResponse = {
         data: {
-            processedVideoUrl: 'http://example.com/video.mp4',
-            metadata: { duration: 10, size: 100 }
+            signed_url: 'http://example.com/video.mp4',
+            video_meta: { width: 1920, height: 1080, fps: 30, duration_sec: 10, has_audio: false },
+            total_poses: 100,
+            processing_time_sec: 5.0,
         }
     };
 

@@ -10,7 +10,7 @@
   2.  そのタスクのテストと動作確認が完了したら、**作業をストップ**し、レビューを受ける。
   3.  承認を得たら、次のタスクへ進む。
 - **品質基準**:
-  - 各タスク完了時に `npm run build`, `npm run test:coverage`, `npm run lint:fix` をパスすること。
+  - 各タスク完了時に `./scripts/quality-check.sh` を実行し、全チェック（typecheck, lint, test, build）をパスすること。
   - テストコードには詳細な日本語コメント（JSDoc/ブロックコメント）を付与すること。
 
 ### 📁 **フェーズ 1: プロジェクト基本構造セットアップ**
@@ -220,7 +220,58 @@ mkdir -p app/{components/{video,ui,layout},lib/{api,services,utils,hooks,stores}
 
 ---
 
-### **�🧪 フェーズ 8: 統合テストと最適化**
+### **🔌 フェーズ 7.5: バックエンド API 連携更新**
+
+**Goal**: バックエンド API 仕様 (`pose-est-backend/docs/openapi.yaml`) に準拠したフロントエンド実装を行う。
+
+#### ✅ タスク 7.5-1: 設定と型定義の更新
+
+- [x] **7.5-1a**: `constants.ts` エンドポイント更新 (`/api/v1/process`, `/api/v1/health`)
+- [x] **7.5-1b**: `types.ts` Zod スキーマ更新
+  - [x] `ApiErrorSchema` をネスト形式 (`{ error: { code, message } }`) に変更
+  - [x] `VideoMetaResponseSchema` 新規作成
+  - [x] `VideoProcessResponseSchema` を新仕様 (`signed_url`, `video_meta`, etc.) に更新
+  - [x] `HealthResponseSchema` 新規作成
+- [x] **7.5-1c**: `posture-estimation.ts` 更新 (FormData キー `video` → `file`)
+- [x] **7.5-1d**: `errors.ts` 更新 (新エラー形式のパース対応)
+- [x] **7.5-1e**: `ProcessingContainer.tsx` 参照更新 (`processedVideoUrl` → `signed_url`)
+- [x] **7.5-1f**: モックデータと既存テストの更新
+- [x] **テスト実行**: 全テストがパスすることを確認
+- [x] **🛑 [Review] 型定義変更の確認**
+
+#### ✅ タスク 7.5-2: エラーコード対応表の実装
+
+- [x] **7.5-2a**: エラーコード型定義の追加 (`BackendErrorCode`, `ClientErrorCode`, `ErrorCode`)
+- [x] **7.5-2b**: エラーメッセージマッピングテーブルの実装 (`ERROR_MESSAGES`)
+- [x] **7.5-2c**: ユーザー向けメッセージ取得ヘルパーの実装 (`getUserFriendlyMessage`)
+- [x] **7.5-2d**: `AppAPIError` に `userMessage` ゲッターを追加
+- [x] **7.5-2e**: 単体テストの追加（既知コード、未知コード、userMessage）
+- [x] **テスト実行**: 全テストがパスすることを確認
+- [x] **🛑 [Review] エラーメッセージ内容の確認**
+
+#### ✅ タスク 7.5-3: ErrorDisplay コンポーネントの拡張
+
+- [x] **7.5-3a**: `ErrorDisplay` の更新 (`userMessage` の優先表示)
+- [x] **7.5-3b**: `ErrorDisplay.test.tsx` の更新（日本語メッセージ表示検証）
+- [x] **テスト実行**: 全テストがパスすることを確認
+- [x] **🛑 [Review] UI/UX 確認**
+
+#### ✅ タスク 7.5-4: 環境変数とデプロイ設定
+
+- [x] **7.5-4a**: `.env.example` に環境別設定例を追記（dev/prod ドメイン）
+- [x] **7.5-4b**: `README.md` に環境変数設定手順を追記（Cloudflare Pages 含む）
+- [x] **7.5-4c**: Cloudflare Pages ビルド設定の確認 (※Adapter 未設定を確認)
+- [x] **🛑 [Review] デプロイ設定の確認**
+
+#### ⬜ タスク 7.5-5: 本番環境連携テスト
+
+- [ ] 開発環境 (`dev.kenken-pose-est.online`) へ実際に動画をアップロードして動作確認
+- [ ] クロスオリジンリクエスト (CORS) が正しく動作するか確認
+- [ ] **🛑 [Review] E2E 動作確認**
+
+---
+
+### **🧪 フェーズ 8: 統合テストと最適化**
 
 #### ** ⬜ タスク 8-1: エラーハンドリングの強化とパフォーマンスレビュー**
 

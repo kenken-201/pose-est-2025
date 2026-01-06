@@ -89,12 +89,19 @@ describe('useVideoProcessing Hook', () => {
      * を確認します。
      */
     it('should update store to COMPLETED on success', async () => {
-        const mockResponse: VideoProcessResponse = { 
-            processedVideoUrl: 'http://example.com/video.mp4', 
-            processingTimeMs: 100, 
-            metadata: { duration: 10, width: 1920, height: 1080 } 
-        };
-        vi.mocked(videoUploader.uploadVideo).mockResolvedValue(mockResponse);
+        const mockResult: VideoProcessResponse = {
+            signed_url: 'https://example.com/video.mp4',
+            video_meta: {
+                width: 1920,
+                height: 1080,
+                fps: 30,
+                duration_sec: 10,
+                has_audio: false,
+            },
+            total_poses: 100,
+            processing_time_sec: 2.0,
+        }; 
+        vi.mocked(videoUploader.uploadVideo).mockResolvedValue(mockResult);
 
         const { result } = renderHook(() => useVideoProcessing(), { wrapper: createWrapper() });
         const file = new File([''], 'test.mp4', { type: 'video/mp4' });
@@ -106,7 +113,7 @@ describe('useVideoProcessing Hook', () => {
         await waitFor(() => {
             const state = useVideoStore.getState();
             expect(state.status).toBe(ProcessingStatus.COMPLETED);
-            expect(state.result).toEqual(mockResponse);
+            expect(state.result).toEqual(mockResult);
         });
     });
 

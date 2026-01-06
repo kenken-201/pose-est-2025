@@ -77,8 +77,10 @@ describe('VideoStore', () => {
      */
     it('should update status to COMPLETED with result (via valid transition)', () => {
         const mockResult = {
-            processedVideoUrl: 'http://example.com/video.mp4',
-            metadata: { duration: 10, width: 1920, height: 1080 }
+            signed_url: 'https://example.com/video.mp4',
+            video_meta: { width: 1920, height: 1080, fps: 30, duration_sec: 10, has_audio: false },
+            total_poses: 100,
+            processing_time_sec: 2.0,
         };
 
         // 有効な状態遷移: IDLE → UPLOADING → COMPLETED
@@ -127,9 +129,17 @@ describe('VideoStore', () => {
      */
     it('should reject invalid state transition (IDLE → COMPLETED)', () => {
         const mockResult = {
-            processedVideoUrl: 'http://example.com/video.mp4',
+            signed_url: 'https://example.com/video.mp4',
+            video_meta: {
+                width: 1920,
+                height: 1080,
+                fps: 30,
+                duration_sec: 10,
+                has_audio: false,
+            },
+            total_poses: 100,
+            processing_time_sec: 2.0,
         };
-
         // 無効な遷移を試みる
         act(() => {
             useVideoStore.getState().setCompleted(mockResult);

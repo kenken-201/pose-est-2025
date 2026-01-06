@@ -38,7 +38,7 @@ export const uploadVideo = async (
     options?: UploadOptions
 ): Promise<VideoProcessResponse> => {
     // クライアント側でのバリデーション
-    const validation = VideoUploadRequestSchema.safeParse({ video: file });
+    const validation = VideoUploadRequestSchema.safeParse({ file: file });
     if (!validation.success) {
         throw new AppAPIError(
             validation.error.errors[0].message,
@@ -49,7 +49,7 @@ export const uploadVideo = async (
     }
 
     const formData = new FormData();
-    formData.append('video', file);
+    formData.append('file', file);
 
     const response = await apiClient.post(APP_CONFIG.API.ENDPOINTS.UPLOAD, formData, {
         headers: {

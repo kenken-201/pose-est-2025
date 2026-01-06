@@ -29,9 +29,10 @@ describe('Posture Estimation API', () => {
             const file = new File(['content'], 'test.mp4', { type: 'video/mp4' });
             const mockResponse = {
                 data: {
-                    processedVideoUrl: 'http://example.com/processed.mp4',
-                    processingTimeMs: 1000,
-                    metadata: {}
+                    signed_url: 'http://example.com/processed.mp4',
+                    video_meta: { width: 1920, height: 1080, fps: 30, duration_sec: 10, has_audio: true },
+                    total_poses: 100,
+                    processing_time_sec: 1.0,
                 }
             };
             
@@ -53,7 +54,7 @@ describe('Posture Estimation API', () => {
 
             // FormDataの中身を検証
             const formDataArg = (apiClient.post as Mock).mock.calls[0][1] as FormData;
-            expect(formDataArg.get('video')).toBe(file);
+            expect(formDataArg.get('file')).toBe(file);
 
             // レスポンスが正しく返されるか検証
             expect(result).toEqual(mockResponse.data);
