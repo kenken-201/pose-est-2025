@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# nvmを読み込む
+if [ -f "$HOME/.nvm/nvm.sh" ]; then
+  . "$HOME/.nvm/nvm.sh"
+  nvm use 2>/dev/null || nvm use default 2>/dev/null || true
+fi
+
+# または、nvmのパスを直接追加
+export PATH="$HOME/.nvm/versions/node/v24.12.0/bin:$PATH"
+
+echo "🔍 Running pre-commit checks..."
+
+# TypeScriptチェック
+if [ -f tsconfig.json ]; then
+  echo "Running TypeScript type checking..."
+  npx tsc --noEmit || {
+    echo "TypeScript check failed"
+    exit 1
+  }
+fi
+
+# ESLintチェック（設定があれば）
+if [ -f .eslintrc.js ] || [ -f .eslintrc.json ] || [ -f .eslintrc.cjs ]; then
+  echo "Running ESLint..."
+  npx eslint . --ext .js,.jsx,.ts,.tsx --fix --quiet || {
+    echo "ESLint check failed"
+    exit 1
+  }
+fi
+
+echo "✅ All pre-commit checks passed!"
