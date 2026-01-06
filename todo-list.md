@@ -333,11 +333,11 @@ mkdir -p app/{components/{video,ui,layout},lib/{api,services,utils,hooks,stores}
 - [x] `workers/app.ts` の型定義更新 (Env)
 - [x] デプロイテスト (`npm run deploy`)
 
-##### ⬜ 9-2c: ブランチ連携とプレビュー
+##### ✅ 9-2c: ブランチ連携とプレビュー (CI/CD)
 
-- [ ] `develop` ブランチ → プレビュー環境
-- [ ] `main` ブランチ → 本番環境
-- [ ] プレビュー URL の発行確認
+- [x] GitHub Actions ワークフロー作成 (`.github/workflows/deploy-workers.yml`)
+- [ ] `develop` ブランチ → プレビュー環境 (Push待機)
+- [ ] `main` ブランチ → 本番環境 (Push待機)
 
 ##### ⬜ 9-2d: カスタムドメイン設定
 
