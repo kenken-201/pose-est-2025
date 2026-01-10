@@ -1,0 +1,10 @@
+# Cloudflare Assets Headers Configuration
+# https://developers.cloudflare.com/pages/configuration/headers/
+
+# Hashed Assets (JS, CSS) - Immutable Cache
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Default for other static assets (Images, Favicon, etc.)
+/*
+  ! Cache-Control: public, max-age=604800

@@ -49,6 +49,15 @@ export default {
     const response = await requestHandler(request, {
       cloudflare: { env, ctx },
     });
-    return applySecurityHeaders(response);
+    
+    const newResponse = applySecurityHeaders(response);
+
+    // HTML レスポンスの場合、キャッシュ無効化ヘッダーを付与
+    // (SSR された最新の状態を常に返すため)
+    if (newResponse.headers.get("Content-Type")?.includes("text/html")) {
+      newResponse.headers.set("Cache-Control", "no-cache");
+    }
+
+    return newResponse;
   },
 } satisfies ExportedHandler<Env>;
