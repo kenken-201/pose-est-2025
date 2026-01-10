@@ -365,10 +365,10 @@ Worker のレスポンスにセキュリティヘッダーを追加する。
 
 **タスク**:
 
-- [ ] `workers/utils/security-headers.ts` の作成（ヘッダー定義と適用ロジック）
-- [ ] `workers/app.ts` への組み込み
-- [ ] ユニットテスト作成 (`test/workers/utils/security-headers.test.ts`)
-- [ ] 動作確認 (`curl -I` / ブラウザ DevTools)
+- [x] `workers/utils/security-headers.ts` の作成（ヘッダー定義と適用ロジック）
+- [x] `workers/app.ts` への組み込み
+- [x] ユニットテスト作成 (`test/workers/utils/security-headers.test.ts`)
+- [x] 動作確認 (`curl -I` / ブラウザ DevTools)
 
 #### ⬜ タスク 10-2: キャッシュ設定
 
