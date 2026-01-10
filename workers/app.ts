@@ -5,6 +5,8 @@
  * このファイルは Wrangler によってビルドされ、Cloudflare Workers 上で実行されます。
  */
 import { createRequestHandler } from 'react-router';
+import { applySecurityHeaders } from './utils/security-headers';
+import { applyHtmlCacheHeaders } from './utils/cache-control';
 
 /**
  * Cloudflare Workers 環境変数の型定義
@@ -45,8 +47,13 @@ const requestHandler = createRequestHandler(
  */
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-    return requestHandler(request, {
+    const response = await requestHandler(request, {
       cloudflare: { env, ctx },
     });
+    
+    const newResponse = applySecurityHeaders(response);
+
+    // HTML レスポンスの場合、キャッシュ無効化ヘッダーを付与
+    return applyHtmlCacheHeaders(newResponse);
   },
 } satisfies ExportedHandler<Env>;
