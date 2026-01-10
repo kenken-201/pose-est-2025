@@ -351,18 +351,24 @@ mkdir -p app/{components/{video,ui,layout},lib/{api,services,utils,hooks,stores}
 
 **背景**: Cloudflare Pages から Workers に移行したため、`_headers.json` や `_routes.json` は使用不可。Worker スクリプト内でセキュリティヘッダーとキャッシュ設定を実装する必要がある。
 
-#### ⬜ タスク 10-1: セキュリティヘッダーの追加
+#### ⬜ タスク 10-1: セキュリティヘッダーの実装
 
-Worker のレスポンスに以下のセキュリティヘッダーを追加する。
+Worker のレスポンスにセキュリティヘッダーを追加する。
+実装は `workers/utils/security-headers.ts` に分離し、テスト可能にする。
 
-- [ ] `X-Content-Type-Options: nosniff`
-- [ ] `X-Frame-Options: DENY`
-- [ ] `Referrer-Policy: strict-origin-when-cross-origin`
-- [ ] `Permissions-Policy: geolocation=(), microphone=(), camera=()`
-- [ ] (Optional) `Content-Security-Policy` の検討・設定
-- [ ] `curl -I` でヘッダー確認
+**対象ヘッダー**:
 
-**実装箇所**: `workers/app.ts` の fetch ハンドラー内でレスポンスヘッダーを追加
+- `X-Content-Type-Options: nosniff`
+- `X-Frame-Options: DENY`
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `Permissions-Policy: geolocation=(), microphone=(), camera=()`
+
+**タスク**:
+
+- [ ] `workers/utils/security-headers.ts` の作成（ヘッダー定義と適用ロジック）
+- [ ] `workers/app.ts` への組み込み
+- [ ] ユニットテスト作成 (`test/workers/utils/security-headers.test.ts`)
+- [ ] 動作確認 (`curl -I` / ブラウザ DevTools)
 
 #### ⬜ タスク 10-2: キャッシュ設定
 
