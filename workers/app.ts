@@ -4,33 +4,47 @@
  * React Router v7 の SSR リクエストを処理するための fetch ハンドラー。
  * このファイルは Wrangler によってビルドされ、Cloudflare Workers 上で実行されます。
  */
-import { createRequestHandler } from "react-router";
+import { createRequestHandler } from 'react-router';
 
 /**
- * Cloudflare 環境の型定義
- * バインディング（KV, R2, D1 など）を使用する場合はここに追加
+ * Cloudflare Workers 環境変数の型定義
+ *
+ * wrangler.jsonc の vars セクションで定義された環境変数。
+ * バインディング（KV, R2, D1 など）を使用する場合もここに追加する。
+ *
+ * @see https://developers.cloudflare.com/workers/runtime-apis/bindings/
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-type Env = {
-  VITE_API_BASE_URL: string;
-  VITE_APP_NAME: string;
-};
+interface Env {
+  /** バックエンド API のベース URL */
+  readonly VITE_API_BASE_URL: string;
+  /** アプリケーション名（環境識別用） */
+  readonly VITE_APP_NAME: string;
+}
 
 /**
  * React Router のリクエストハンドラーを作成
- * virtual:react-router/server-build から SSR ビルドをインポート
+ *
+ * virtual:react-router/server-build から SSR ビルドを動的インポートし、
+ * 現在の実行モード（development/production）を渡す。
  */
 const requestHandler = createRequestHandler(
-  () => import("virtual:react-router/server-build"),
+  () => import('virtual:react-router/server-build'),
   import.meta.env.MODE
 );
 
 /**
  * Cloudflare Workers の fetch ハンドラー
- * すべてのリクエストを React Router に委譲
+ *
+ * すべての HTTP リクエストを React Router に委譲し、
+ * SSR レンダリングを実行する。
+ *
+ * @param request - 受信した HTTP リクエスト
+ * @param env - Cloudflare 環境変数とバインディング
+ * @param ctx - 実行コンテキスト（waitUntil など）
+ * @returns SSR レンダリングされた HTTP レスポンス
  */
 export default {
-  async fetch(request, env, ctx) {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     return requestHandler(request, {
       cloudflare: { env, ctx },
     });
