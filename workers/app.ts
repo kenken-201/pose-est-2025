@@ -6,6 +6,7 @@
  */
 import { createRequestHandler } from 'react-router';
 import { applySecurityHeaders } from './utils/security-headers';
+import { applyHtmlCacheHeaders } from './utils/cache-control';
 
 /**
  * Cloudflare Workers 環境変数の型定義
@@ -53,11 +54,6 @@ export default {
     const newResponse = applySecurityHeaders(response);
 
     // HTML レスポンスの場合、キャッシュ無効化ヘッダーを付与
-    // (SSR された最新の状態を常に返すため)
-    if (newResponse.headers.get("Content-Type")?.includes("text/html")) {
-      newResponse.headers.set("Cache-Control", "no-cache");
-    }
-
-    return newResponse;
+    return applyHtmlCacheHeaders(newResponse);
   },
 } satisfies ExportedHandler<Env>;

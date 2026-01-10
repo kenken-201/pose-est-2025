@@ -8,3 +8,5 @@
 # Default for other static assets (Images, Favicon, etc.)
 /*
   ! Cache-Control: public, max-age=604800
+  X-Content-Type-Options: nosniff
+

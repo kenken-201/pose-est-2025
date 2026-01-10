@@ -370,7 +370,7 @@ Worker のレスポンスにセキュリティヘッダーを追加する。
 - [x] ユニットテスト作成 (`test/workers/utils/security-headers.test.ts`)
 - [x] 動作確認 (`curl -I` / ブラウザ DevTools)
 
-#### ⬜ タスク 10-2: キャッシュ設定
+#### ✅ タスク 10-2: キャッシュ設定
 
 静的アセットに適切な `Cache-Control` ヘッダーを設定する。
 
