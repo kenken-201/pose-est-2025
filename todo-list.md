@@ -306,16 +306,83 @@ mkdir -p app/{components/{video,ui,layout},lib/{api,services,utils,hooks,stores}
 
 ### 🚢 **フェーズ 9: ビルドとデプロイ準備**
 
-#### ⬜ タスク 9-1: ビルド設定
+#### ✅ タスク 9-1: ビルド設定
 
-- [ ] プロダクションビルドテスト
-- [ ] 環境変数設定
+- [x] プロダクションビルドテスト (`npm run build`)
+- [x] 環境変数サンプル設定 (`.env.example`)
+- [x] SSR モードでの正常動作確認 (`npm run dev`)
 
-#### ⬜ タスク 9-2: デプロイ設定
+#### ✅ タスク 9-2: Cloudflare Workers デプロイ設定
 
-- [ ] Dockerfile 作成
-  - docker desktop ではなく、colima を使用する
-  - デプロイには Cloudflare Pages を使用する
-- [ ] CI/CD 設定（オプション）
+**背景**: React Router v7 は SSR が必要なため、静的ホスティング (Pages) ではなく Cloudflare Workers を使用する。
+
+##### ✅ 9-2a: Cloudflare Workers SSR マイグレーション (Implementation)
+
+- [x] `@cloudflare/vite-plugin`, `wrangler` パッケージのインストール
+- [x] `vite.config.ts` に Cloudflare アダプター設定を追加
+- [x] `react-router.config.ts` の更新 (SSR + v8_viteEnvironmentApi)
+- [x] `wrangler.jsonc` の作成（Workers 設定）
+- [x] `workers/app.ts` の作成（Worker エントリーポイント）
+- [x] ローカルでの動作確認 (`npm run preview`)
+- [x] Cloudflare へのデプロイ確認 (`npm run deploy`)
+
+##### ✅ 9-2b: Workers プロジェクト設定 (Infrastructure)
+
+- [x] Cloudflare Pages モジュールの無効化 (Terraform)
+- [x] 環境変数設定 (`wrangler.jsonc` に `vars` 追加)
+- [x] `workers/app.ts` の型定義更新 (Env)
+- [x] デプロイテスト (`npm run deploy`)
+
+##### ✅ 9-2c: ブランチ連携とプレビュー (CI/CD)
+
+- [x] GitHub Actions ワークフロー作成 (`.github/workflows/deploy-workers.yml`)
+- [ ] `develop` ブランチ → プレビュー環境 (Push待機)
+- [ ] `main` ブランチ → 本番環境 (Push待機)
+
+##### ⬜ 9-2d: カスタムドメイン設定
+
+- [ ] `dev.kenken-pose-est.online` → 開発環境 Workers
+- [ ] `kenken-pose-est.online` → 本番環境 Workers
+- [ ] DNS レコード設定（Terraform 連携は `pose-est-infra/cloudflare` で管理）
+
+---
+
+### 🔒 **フェーズ 10: Workers セキュリティ & パフォーマンス**
+
+**背景**: Cloudflare Pages から Workers に移行したため、`_headers.json` や `_routes.json` は使用不可。Worker スクリプト内でセキュリティヘッダーとキャッシュ設定を実装する必要がある。
+
+#### ✅ タスク 10-1: セキュリティヘッダーの実装
+
+Worker のレスポンスにセキュリティヘッダーを追加する。
+実装は `workers/utils/security-headers.ts` に分離し、テスト可能にする。
+
+**対象ヘッダー**:
+
+- `X-Content-Type-Options: nosniff`
+- `X-Frame-Options: DENY`
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `Permissions-Policy: geolocation=(), microphone=(), camera=()`
+
+**タスク**:
+
+- [x] `workers/utils/security-headers.ts` の作成（ヘッダー定義と適用ロジック）
+- [x] `workers/app.ts` への組み込み
+- [x] ユニットテスト作成 (`test/workers/utils/security-headers.test.ts`)
+- [x] 動作確認 (`curl -I` / ブラウザ DevTools)
+
+#### ✅ タスク 10-2: キャッシュ設定
+
+静的アセットに適切な `Cache-Control` ヘッダーを設定する。
+
+| リソースタイプ  | 推奨 Cache-Control                         |
+| --------------- | ------------------------------------------ |
+| HTML            | `no-cache` or `max-age=0, must-revalidate` |
+| JS/CSS (hashed) | `public, max-age=31536000, immutable`      |
+| 画像/フォント   | `public, max-age=604800` (1週間)           |
+| API レスポンス  | `no-store`                                 |
+
+- [x] `public/_headers` 作成（静的アセット用）
+- [x] `workers/app.ts` 更新（HTML レスポンス用 no-cache）
+- [x] 動作確認（アセットと HTML のヘッダー確認）
 
 ---
