@@ -32,6 +32,12 @@ export const SECURITY_HEADERS = {
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
    */
   "X-XSS-Protection": "1; mode=block",
+  /**
+   * HTTP Strict Transport Security (HSTS)
+   * HTTPS 接続を強制する (1年間)
+   * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+   */
+  "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
 } as const;
 
 /**

@@ -2,14 +2,17 @@ import { describe, it, expect } from "vitest";
 import { applyHtmlCacheHeaders } from "../../../workers/utils/cache-control";
 
 describe("applyHtmlCacheHeaders", () => {
-  it("should add no-cache header to HTML responses", () => {
+  it("should add strict no-cache headers to HTML responses", () => {
     const response = new Response("<html>...</html>", {
       headers: { "Content-Type": "text/html; charset=utf-8" },
     });
 
     applyHtmlCacheHeaders(response);
 
-    expect(response.headers.get("Cache-Control")).toBe("no-cache");
+    // 厳格なキャッシュ無効化: no-cache, no-store, must-revalidate
+    expect(response.headers.get("Cache-Control")).toBe(
+      "no-cache, no-store, must-revalidate"
+    );
   });
 
   it("should NOT add cache header to non-HTML responses", () => {
