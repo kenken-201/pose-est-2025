@@ -351,7 +351,7 @@ mkdir -p app/{components/{video,ui,layout},lib/{api,services,utils,hooks,stores}
 
 **背景**: Cloudflare Pages から Workers に移行したため、`_headers.json` や `_routes.json` は使用不可。Worker スクリプト内でセキュリティヘッダーとキャッシュ設定を実装する必要がある。
 
-#### ⬜ タスク 10-1: セキュリティヘッダーの実装
+#### ✅ タスク 10-1: セキュリティヘッダーの実装
 
 Worker のレスポンスにセキュリティヘッダーを追加する。
 実装は `workers/utils/security-headers.ts` に分離し、テスト可能にする。

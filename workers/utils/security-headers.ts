@@ -5,16 +5,32 @@
  * OWASP Secure Headers Project 推奨の設定に基づいています。
  */
 export const SECURITY_HEADERS = {
-  /** MIME タイプスニッフィングを無効化 */
+  /**
+   * MIME タイプスニッフィングを無効化
+   * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+   */
   "X-Content-Type-Options": "nosniff",
-  /** クリックジャッキング防止 (iframe での表示を拒否) */
+  /**
+   * クリックジャッキング防止 (iframe での表示を拒否)
+   * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+   */
   "X-Frame-Options": "DENY",
-  /** クロスオリジンリクエスト時のリファラ送信を制限 */
+  /**
+   * クロスオリジンリクエスト時のリファラ送信を制限
+   * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy
+   */
   "Referrer-Policy": "strict-origin-when-cross-origin",
-  /** 使用しないブラウザ機能（カメラ、マイクなど）を無効化 */
+  /**
+   * 使用しないブラウザ機能（カメラ、マイクなど）を無効化
+   * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy
+   */
   "Permissions-Policy":
     "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
-  /** XSS フィルター有効化 (ブロックモード) - レガシーブラウザ向け */
+  /**
+   * XSS フィルター有効化 (ブロックモード) - レガシーブラウザ向け
+   * @deprecated 現代のブラウザは CSP を使用しますが、古い端末サポートのために残しています
+   * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+   */
   "X-XSS-Protection": "1; mode=block",
 } as const;
 

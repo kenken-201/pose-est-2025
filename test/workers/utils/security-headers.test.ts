@@ -50,4 +50,22 @@ describe("applySecurityHeaders", () => {
     expect(response.status).toBe(404);
     expect(response.statusText).toBe("Not Found Custom");
   });
+
+  it("should handle Redirect responses (302) correctly", () => {
+    const originalResponse = Response.redirect("https://example.com/new-location", 302);
+    const response = applySecurityHeaders(originalResponse);
+
+    expect(response.status).toBe(302);
+    expect(response.headers.get("Location")).toBe("https://example.com/new-location");
+    expect(response.headers.get("X-Frame-Options")).toBe("DENY");
+  });
+
+  it("should handle No Content responses (204) correctly", () => {
+    const originalResponse = new Response(null, { status: 204 });
+    const response = applySecurityHeaders(originalResponse);
+
+    expect(response.status).toBe(204);
+    expect(response.body).toBe(null);
+    expect(response.headers.get("X-Frame-Options")).toBe("DENY");
+  });
 });
