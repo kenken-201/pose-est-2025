@@ -391,11 +391,11 @@ Worker のレスポンスにセキュリティヘッダーを追加する。
 
 Cloudflare のプラットフォーム機能を活用し、アプリケーションの可観測性と信頼性を向上させる。
 
-#### ⬜ タスク 11-1: Cloudflare Web Analytics の導入
+#### ✅ タスク 11-1: Cloudflare Web Analytics の導入
 
 プライバシー重視 (Privacy-First) の Web Analytics を導入し、Core Web Vitals やページビューを計測する。Workers (SSR) 環境での確実な動作のため、手動スクリプト挿入を行う。
 
-- [ ] Cloudflare Dashboard で Web Analytics をセットアップ（Token取得）
-- [ ] 環境変数 `VITE_CF_BEACON_TOKEN` の設定
-- [ ] `app/root.tsx` へのスクリプトタグ実装
-- [ ] 動作確認（本番デプロイ後の計測確認）
+- [x] Cloudflare Dashboard で Web Analytics をセットアップ（Token取得）
+- [x] 環境変数 `VITE_CF_BEACON_TOKEN` の設定
+- [x] `app/root.tsx` へのスクリプトタグ実装
+- [x] 動作確認（本番デプロイ後の計測確認）
