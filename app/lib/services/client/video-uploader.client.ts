@@ -49,10 +49,10 @@ export const videoUploader = {
         const formData = new FormData();
         formData.append('video', file);
 
-        // 2. アップロードリクエスト (BFFへ)
-        // Important Fix #4: Use APP_CONFIG instead of hardcoded endpoint
+        // 2. アップロードリクエスト (Direct to Backend)
+        // Fix: Use Direct Backend Endpoint instead of missing BFF route
         const response = await apiClient.post<VideoProcessResponse>(
-            APP_CONFIG.API.ENDPOINTS.BFF_UPLOAD,
+            APP_CONFIG.API.ENDPOINTS.UPLOAD,
             formData,
             {
                 headers: {
