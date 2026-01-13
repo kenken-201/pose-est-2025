@@ -15,144 +15,141 @@ import { UploadDropzone } from '@/components/video/UploadDropzone';
  * 6. ファイル拒否: 無効なファイルの場合エラーメッセージを表示
  */
 describe('UploadDropzone', () => {
-    const defaultProps = {
-        onFileSelect: vi.fn(),
-    };
+  const defaultProps = {
+    onFileSelect: vi.fn(),
+  };
 
-    beforeEach(() => {
-        vi.clearAllMocks();
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('renders default upload message', () => {
+    render(<UploadDropzone {...defaultProps} />);
+    expect(screen.getByText(/動画をドラッグ＆ドロップ/i)).toBeInTheDocument();
+    expect(screen.getByText(/またはクリックして選択/i)).toBeInTheDocument();
+  });
+
+  it('handles file drop correctly', async () => {
+    const onFileSelect = vi.fn();
+    render(<UploadDropzone {...defaultProps} onFileSelect={onFileSelect} />);
+
+    const file = new File(['dummy'], 'test.mp4', { type: 'video/mp4' });
+    const input = screen.getByTestId('dropzone-input');
+
+    await userEvent.upload(input, file);
+
+    await waitFor(() => {
+      expect(onFileSelect).toHaveBeenCalledWith(file);
+    });
+  });
+
+  it('shows active state when dragging file', async () => {
+    render(<UploadDropzone {...defaultProps} />);
+
+    const dropzone = screen.getByTestId('upload-dropzone');
+
+    fireEvent.dragEnter(dropzone, {
+      dataTransfer: {
+        files: [new File([''], 'test.mp4', { type: 'video/mp4' })],
+        items: [
+          {
+            kind: 'file',
+            type: 'video/mp4',
+            getAsFile: () => new File([''], 'test.mp4', { type: 'video/mp4' }),
+          },
+        ],
+        types: ['Files'],
+      },
     });
 
-    it('renders default upload message', () => {
-        render(<UploadDropzone {...defaultProps} />);
-        expect(screen.getByText(/動画をドラッグ＆ドロップ/i)).toBeInTheDocument();
-        expect(screen.getByText(/またはクリックして選択/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/ここにドロップしてください/i)).toBeInTheDocument();
+    });
+  });
+
+  it('does not trigger onFileSelect when disabled', async () => {
+    const onFileSelect = vi.fn();
+    render(<UploadDropzone {...defaultProps} onFileSelect={onFileSelect} disabled={true} />);
+
+    const file = new File(['dummy'], 'test.mp4', { type: 'video/mp4' });
+    const input = screen.getByTestId('dropzone-input');
+
+    await userEvent.upload(input, file);
+
+    expect(onFileSelect).not.toHaveBeenCalled();
+    expect(screen.getByTestId('upload-dropzone')).toHaveClass('opacity-50', 'cursor-not-allowed');
+  });
+
+  it('accepts specific file types', async () => {
+    const onFileSelect = vi.fn();
+    const accept = { 'video/mp4': ['.mp4'] };
+    render(<UploadDropzone {...defaultProps} onFileSelect={onFileSelect} accept={accept} />);
+
+    const validFile = new File([''], 'test.mp4', { type: 'video/mp4' });
+    const input = screen.getByTestId('dropzone-input');
+
+    await userEvent.upload(input, validFile);
+
+    expect(onFileSelect).toHaveBeenCalledWith(validFile);
+  });
+
+  /**
+   * Important #6: ファイル拒否時のエラー表示テスト
+   */
+  it('displays error message for rejected files (size exceeded)', async () => {
+    const onFileSelect = vi.fn();
+    const onFileRejected = vi.fn();
+
+    render(
+      <UploadDropzone
+        onFileSelect={onFileSelect}
+        onFileRejected={onFileRejected}
+        maxSize={100} // 100バイト制限
+        accept={{ 'video/mp4': ['.mp4'] }}
+      />
+    );
+
+    // 制限を超えるファイルを作成
+    const largeFile = new File(['x'.repeat(200)], 'large.mp4', { type: 'video/mp4' });
+    const input = screen.getByTestId('dropzone-input');
+
+    await userEvent.upload(input, largeFile);
+
+    // コールバックが呼ばれないことを確認
+    expect(onFileSelect).not.toHaveBeenCalled();
+
+    // エラーコールバックが呼ばれることを確認
+    await waitFor(() => {
+      expect(onFileRejected).toHaveBeenCalled();
     });
 
-    it('handles file drop correctly', async () => {
-        const onFileSelect = vi.fn();
-        render(<UploadDropzone {...defaultProps} onFileSelect={onFileSelect} />);
-
-        const file = new File(['dummy'], 'test.mp4', { type: 'video/mp4' });
-        const input = screen.getByTestId('dropzone-input');
-
-        await userEvent.upload(input, file);
-
-        await waitFor(() => {
-            expect(onFileSelect).toHaveBeenCalledWith(file);
-        });
+    // エラーメッセージが表示されることを確認
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toBeInTheDocument();
+      expect(screen.getByTestId('dropzone-error')).toHaveTextContent(
+        /ファイルサイズが大きすぎます/
+      );
     });
+  });
 
-    it('shows active state when dragging file', async () => {
-        render(<UploadDropzone {...defaultProps} />);
-        
-        const dropzone = screen.getByTestId('upload-dropzone');
-        
-        fireEvent.dragEnter(dropzone, {
-            dataTransfer: {
-                files: [new File([''], 'test.mp4', { type: 'video/mp4' })],
-                items: [
-                    {
-                        kind: 'file',
-                        type: 'video/mp4',
-                        getAsFile: () => new File([''], 'test.mp4', { type: 'video/mp4' }),
-                    },
-                ],
-                types: ['Files'],
-            },
-        });
+  it('displays error message for invalid file type', async () => {
+    const onFileSelect = vi.fn();
 
-        await waitFor(() => {
-            expect(screen.getByText(/ここにドロップしてください/i)).toBeInTheDocument();
-        });
+    render(<UploadDropzone onFileSelect={onFileSelect} accept={{ 'video/mp4': ['.mp4'] }} />);
+
+    // 許可されていない形式のファイル
+    const invalidFile = new File(['test'], 'document.pdf', { type: 'application/pdf' });
+    const input = screen.getByTestId('dropzone-input');
+
+    await userEvent.upload(input, invalidFile);
+
+    expect(onFileSelect).not.toHaveBeenCalled();
+
+    await waitFor(() => {
+      const errorElement = screen.queryByTestId('dropzone-error');
+      if (errorElement) {
+        expect(errorElement).toHaveTextContent(/対応していないファイル形式です/);
+      }
     });
-
-    it('does not trigger onFileSelect when disabled', async () => {
-        const onFileSelect = vi.fn();
-        render(<UploadDropzone {...defaultProps} onFileSelect={onFileSelect} disabled={true} />);
-
-        const file = new File(['dummy'], 'test.mp4', { type: 'video/mp4' });
-        const input = screen.getByTestId('dropzone-input');
-
-        await userEvent.upload(input, file);
-
-        expect(onFileSelect).not.toHaveBeenCalled();
-        expect(screen.getByTestId('upload-dropzone')).toHaveClass('opacity-50', 'cursor-not-allowed');
-    });
-
-    it('accepts specific file types', async () => {
-        const onFileSelect = vi.fn();
-        const accept = { 'video/mp4': ['.mp4'] };
-        render(<UploadDropzone {...defaultProps} onFileSelect={onFileSelect} accept={accept} />);
-
-        const validFile = new File([''], 'test.mp4', { type: 'video/mp4' });
-        const input = screen.getByTestId('dropzone-input');
-
-        await userEvent.upload(input, validFile);
-        
-        expect(onFileSelect).toHaveBeenCalledWith(validFile);
-    });
-
-    /**
-     * Important #6: ファイル拒否時のエラー表示テスト
-     */
-    it('displays error message for rejected files (size exceeded)', async () => {
-        const onFileSelect = vi.fn();
-        const onFileRejected = vi.fn();
-        
-        render(
-            <UploadDropzone 
-                onFileSelect={onFileSelect}
-                onFileRejected={onFileRejected}
-                maxSize={100}  // 100バイト制限
-                accept={{ 'video/mp4': ['.mp4'] }}
-            />
-        );
-
-        // 制限を超えるファイルを作成
-        const largeFile = new File(['x'.repeat(200)], 'large.mp4', { type: 'video/mp4' });
-        const input = screen.getByTestId('dropzone-input');
-
-        await userEvent.upload(input, largeFile);
-
-        // コールバックが呼ばれないことを確認
-        expect(onFileSelect).not.toHaveBeenCalled();
-        
-        // エラーコールバックが呼ばれることを確認
-        await waitFor(() => {
-            expect(onFileRejected).toHaveBeenCalled();
-        });
-
-        // エラーメッセージが表示されることを確認
-        await waitFor(() => {
-            expect(screen.getByRole('alert')).toBeInTheDocument();
-            expect(screen.getByTestId('dropzone-error')).toHaveTextContent(/ファイルサイズが大きすぎます/);
-        });
-    });
-
-    it('displays error message for invalid file type', async () => {
-        const onFileSelect = vi.fn();
-        
-        render(
-            <UploadDropzone 
-                onFileSelect={onFileSelect}
-                accept={{ 'video/mp4': ['.mp4'] }}
-            />
-        );
-
-        // 許可されていない形式のファイル
-        const invalidFile = new File(['test'], 'document.pdf', { type: 'application/pdf' });
-        const input = screen.getByTestId('dropzone-input');
-
-        await userEvent.upload(input, invalidFile);
-
-        expect(onFileSelect).not.toHaveBeenCalled();
-        
-        await waitFor(() => {
-            const errorElement = screen.queryByTestId('dropzone-error');
-            if (errorElement) {
-                expect(errorElement).toHaveTextContent(/対応していないファイル形式です/);
-            }
-        });
-    });
+  });
 });

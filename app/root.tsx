@@ -1,25 +1,19 @@
-import type { Route } from "./+types/root";
-import {
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-} from "react-router";
+import type { Route } from './+types/root';
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
 
-import { Suspense } from "react";
-import { AppProviders } from "./lib/providers/providers";
-import { GlobalError } from "./components/common/GlobalError";
-import { LoadingSpinner } from "./components/ui/LoadingSpinner";
+import { Suspense } from 'react';
+import { AppProviders } from './lib/providers/providers';
+import { GlobalError } from './components/common/GlobalError';
+import { LoadingSpinner } from './components/ui/LoadingSpinner';
 
-import "./styles/globals.css";
+import './styles/globals.css';
 
 export const links: Route.LinksFunction = () => [
-  { rel: "preconnect", href: "https://fonts.googleapis.com" },
-  { rel: "preconnect", href: "https://fonts.gstatic.com" },
+  { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+  { rel: 'preconnect', href: 'https://fonts.gstatic.com' },
   {
-    rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
+    rel: 'stylesheet',
+    href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
   },
 ];
 

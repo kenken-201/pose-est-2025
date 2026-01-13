@@ -9,35 +9,34 @@ export const SECURITY_HEADERS = {
    * MIME タイプスニッフィングを無効化
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
    */
-  "X-Content-Type-Options": "nosniff",
+  'X-Content-Type-Options': 'nosniff',
   /**
    * クリックジャッキング防止 (iframe での表示を拒否)
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
    */
-  "X-Frame-Options": "DENY",
+  'X-Frame-Options': 'DENY',
   /**
    * クロスオリジンリクエスト時のリファラ送信を制限
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy
    */
-  "Referrer-Policy": "strict-origin-when-cross-origin",
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
   /**
    * 使用しないブラウザ機能（カメラ、マイクなど）を無効化
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy
    */
-  "Permissions-Policy":
-    "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
   /**
    * XSS フィルター有効化 (ブロックモード) - レガシーブラウザ向け
    * @deprecated 現代のブラウザは CSP を使用しますが、古い端末サポートのために残しています
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
    */
-  "X-XSS-Protection": "1; mode=block",
+  'X-XSS-Protection': '1; mode=block',
   /**
    * HTTP Strict Transport Security (HSTS)
    * HTTPS 接続を強制する (1年間)
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
    */
-  "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
 } as const;
 
 /**

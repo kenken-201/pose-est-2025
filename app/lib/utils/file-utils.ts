@@ -25,11 +25,11 @@ import { APP_CONFIG } from '../config/constants';
  * ```
  */
 export const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
 /**
@@ -50,9 +50,9 @@ export const formatFileSize = (bytes: number): string => {
  * ```
  */
 export const getFileExtension = (filename: string): string => {
-    // ビット演算を使用して、ドットが見つからない場合（-1）を適切に処理
-    // -1 - 1 = -2, -2 >>> 0 = 4294967294, + 2 で文字列の終端を超えるため空文字を返す
-    return filename.slice(((filename.lastIndexOf('.') - 1) >>> 0) + 2);
+  // ビット演算を使用して、ドットが見つからない場合（-1）を適切に処理
+  // -1 - 1 = -2, -2 >>> 0 = 4294967294, + 2 で文字列の終端を超えるため空文字を返す
+  return filename.slice(((filename.lastIndexOf('.') - 1) >>> 0) + 2);
 };
 
 /**
@@ -75,7 +75,7 @@ export const getFileExtension = (filename: string): string => {
  * ```
  */
 export const isVideoFile = (file: File): boolean => {
-    return file.type.startsWith('video/');
+  return file.type.startsWith('video/');
 };
 
 /**
@@ -87,16 +87,16 @@ export const isVideoFile = (file: File): boolean => {
  * @returns 許可されたタイプの場合 true
  */
 export const isAcceptedVideoType = (file: File): boolean => {
-    const acceptedTypes = Object.keys(APP_CONFIG.UPLOAD.ACCEPTED_TYPES);
-    return acceptedTypes.includes(file.type);
+  const acceptedTypes = Object.keys(APP_CONFIG.UPLOAD.ACCEPTED_TYPES);
+  return acceptedTypes.includes(file.type);
 };
 
 /**
  * バリデーション結果型
  */
 export interface ValidationResult {
-    valid: boolean;
-    error?: string;
+  valid: boolean;
+  error?: string;
 }
 
 /**
@@ -110,30 +110,30 @@ export interface ValidationResult {
  * @returns バリデーション結果 { valid: boolean, error?: string }
  */
 export const validateVideoFile = (file: File): ValidationResult => {
-    // Important Fix #5: Use strict MIME type check with APP_CONFIG
-    const acceptedTypes = Object.keys(APP_CONFIG.UPLOAD.ACCEPTED_TYPES);
-    
-    if (!isAcceptedVideoType(file)) {
-        return {
-            valid: false,
-            error: `Invalid file type. Accepted formats: ${acceptedTypes.join(', ')}.`,
-        };
-    }
+  // Important Fix #5: Use strict MIME type check with APP_CONFIG
+  const acceptedTypes = Object.keys(APP_CONFIG.UPLOAD.ACCEPTED_TYPES);
 
-    if (file.size > APP_CONFIG.UPLOAD.MAX_SIZE_BYTES) {
-        return {
-            valid: false,
-            error: `File size exceeds the limit of ${formatFileSize(APP_CONFIG.UPLOAD.MAX_SIZE_BYTES)}.`,
-        };
-    }
+  if (!isAcceptedVideoType(file)) {
+    return {
+      valid: false,
+      error: `Invalid file type. Accepted formats: ${acceptedTypes.join(', ')}.`,
+    };
+  }
 
-    // Important Fix #8: Check for 0-byte file
-    if (file.size === 0) {
-        return {
-            valid: false,
-            error: 'File is empty. Please select a valid video file.',
-        };
-    }
+  if (file.size > APP_CONFIG.UPLOAD.MAX_SIZE_BYTES) {
+    return {
+      valid: false,
+      error: `File size exceeds the limit of ${formatFileSize(APP_CONFIG.UPLOAD.MAX_SIZE_BYTES)}.`,
+    };
+  }
 
-    return { valid: true };
+  // Important Fix #8: Check for 0-byte file
+  if (file.size === 0) {
+    return {
+      valid: false,
+      error: 'File is empty. Please select a valid video file.',
+    };
+  }
+
+  return { valid: true };
 };
