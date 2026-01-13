@@ -1,7 +1,7 @@
 import type { Route } from './+types/root';
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
 
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
 import { AppProviders } from './lib/providers/providers';
 import { GlobalError } from './components/common/GlobalError';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
@@ -18,6 +18,27 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  // Prevent default drag and drop behavior (browser navigation to file)
+  useEffect(() => {
+    const handleDragOver = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    const handleDrop = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    window.addEventListener('dragover', handleDragOver);
+    window.addEventListener('drop', handleDrop);
+
+    return () => {
+      window.removeEventListener('dragover', handleDragOver);
+      window.removeEventListener('drop', handleDrop);
+    };
+  }, []);
+
   return (
     <html lang="ja">
       <head>
