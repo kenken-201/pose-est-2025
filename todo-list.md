@@ -400,7 +400,7 @@ Cloudflare のプラットフォーム機能を活用し、アプリケーショ
 - [x] `app/root.tsx` へのスクリプトタグ実装
 - [x] 動作確認（本番デプロイ後の計測確認）
 
-#### ⬜ タスク 11-2: 本番環境デプロイとカスタムドメイン有効化
+#### ✅ タスク 11-2: 本番環境デプロイとカスタムドメイン有効化
 
 フロントエンドアプリケーションを本番環境 (`kenken-pose-est.online`) にデプロイし、カスタムドメインでアクセス可能にする。
 
@@ -421,12 +421,12 @@ Cloudflare のプラットフォーム機能を活用し、アプリケーショ
   - [x] `VITE_API_BASE_URL` が本番 API URL を指しているか確認
   - [x] `VITE_APP_NAME` が本番用の名称になっているか確認
 
-- [ ] **11-2c: 本番デプロイの実行**
-  - [ ] `main` ブランチへマージ (develop → main PR)
-  - [ ] GitHub Actions ワークフローの成功確認
-  - [ ] Cloudflare Dashboard での Workers デプロイ確認
+- [x] **11-2c: 本番デプロイの実行**
+  - [x] `main` ブランチへマージ (develop → main PR)
+  - [x] GitHub Actions ワークフローの成功確認
+  - [x] Cloudflare Dashboard での Workers デプロイ確認
 
-- [ ] **11-2d: カスタムドメイン動作確認**
+- [x] **11-2d: カスタムドメイン動作確認**
   - [x] `https://kenken-pose-est.online` でアクセス可能か確認
   - [x] HTTPS 証明書が有効か確認 (ブラウザで鍵マーク)
   - [x] セキュリティヘッダーの付与確認 (`curl -I`)
