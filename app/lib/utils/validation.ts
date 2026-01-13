@@ -23,7 +23,7 @@ import { z } from 'zod';
  * ```
  */
 export const isValidEmail = (email: string): boolean => {
-    return z.string().email().safeParse(email).success;
+  return z.string().email().safeParse(email).success;
 };
 
 /**
@@ -42,7 +42,7 @@ export const isValidEmail = (email: string): boolean => {
  * ```
  */
 export const isValidUUID = (id: string): boolean => {
-    return z.string().uuid().safeParse(id).success;
+  return z.string().uuid().safeParse(id).success;
 };
 
 /**
@@ -62,5 +62,5 @@ export const isValidUUID = (id: string): boolean => {
  * ```
  */
 export const isValidUrl = (url: string): boolean => {
-    return z.string().url().safeParse(url).success;
+  return z.string().url().safeParse(url).success;
 };

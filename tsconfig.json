@@ -21,10 +21,6 @@
     },
     "types": ["@testing-library/jest-dom", "node"]
   },
-  "include": [
-    "app/**/*",
-    "test/**/*",
-    "vitest.config.ts"
-  ],
+  "include": ["app/**/*", "test/**/*", "vitest.config.ts"],
   "exclude": ["node_modules", "dist"]
 }

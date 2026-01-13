@@ -6,18 +6,18 @@
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "directory": "./build/client",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
   },
   "vars": {
-    "VITE_API_BASE_URL": "https://api.dev.kenken-pose-est.online",
-    "VITE_APP_NAME": "KenKen Pose Est (Dev)"
+    "VITE_API_BASE_URL": "https://api-dev.kenken-pose-est.online",
+    "VITE_APP_NAME": "KenKen Pose Est (Dev)",
   },
   "env": {
     "production": {
       "vars": {
         "VITE_API_BASE_URL": "https://api.kenken-pose-est.online",
-        "VITE_APP_NAME": "KenKen Pose Est"
-      }
-    }
-  }
+        "VITE_APP_NAME": "KenKen Pose Est",
+      },
+    },
+  },
 }

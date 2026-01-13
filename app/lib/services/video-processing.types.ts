@@ -19,11 +19,11 @@ import { z } from 'zod';
  * - `ERROR`: エラーが発生して処理が中断
  */
 export const ProcessingStatusSchema = z.enum([
-    'IDLE',
-    'UPLOADING',
-    'PROCESSING',
-    'COMPLETED',
-    'ERROR',
+  'IDLE',
+  'UPLOADING',
+  'PROCESSING',
+  'COMPLETED',
+  'ERROR',
 ]);
 
 /** 動画処理ステータスの型 */
@@ -46,23 +46,23 @@ export type ProcessingStatus = z.infer<typeof ProcessingStatusSchema>;
  * ```
  */
 export const VideoMetadataSchema = z.object({
-    /** ファイル名（拡張子含む） */
-    filename: z.string(),
-    /** ファイルサイズ（バイト） */
-    filesize: z.number(),
-    /** 動画の長さ（秒、取得できない場合はundefined） */
-    duration: z.number().optional(),
-    /** 動画の解像度（取得できない場合はundefined） */
-    dimensions: z
-        .object({
-            /** 横幅（ピクセル） */
-            width: z.number(),
-            /** 高さ（ピクセル） */
-            height: z.number(),
-        })
-        .optional(),
-    /** MIMEタイプ（例: 'video/mp4'） */
-    type: z.string(),
+  /** ファイル名（拡張子含む） */
+  filename: z.string(),
+  /** ファイルサイズ（バイト） */
+  filesize: z.number(),
+  /** 動画の長さ（秒、取得できない場合はundefined） */
+  duration: z.number().optional(),
+  /** 動画の解像度（取得できない場合はundefined） */
+  dimensions: z
+    .object({
+      /** 横幅（ピクセル） */
+      width: z.number(),
+      /** 高さ（ピクセル） */
+      height: z.number(),
+    })
+    .optional(),
+  /** MIMEタイプ（例: 'video/mp4'） */
+  type: z.string(),
 });
 
 /** 動画メタデータの型 */
@@ -86,22 +86,22 @@ export type VideoMetadata = z.infer<typeof VideoMetadataSchema>;
  * ```
  */
 export const ProcessingSessionSchema = z.object({
-    /** セッションの一意識別子（UUID v4） */
-    id: z.string().uuid(),
-    /** 現在の処理ステータス */
-    status: ProcessingStatusSchema,
-    /** 元動画のURL（アップロード後に設定、オプション） */
-    originalVideoUrl: z.string().optional(),
-    /** 処理済み動画のURL（処理完了後に設定、オプション） */
-    processedVideoUrl: z.string().optional(),
-    /** エラーメッセージ（エラー発生時のみ設定） */
-    error: z.string().optional(),
-    /** 処理の進捗率（0-100%） */
-    progress: z.number().min(0).max(100).default(0),
-    /** セッション作成日時 */
-    createdAt: z.date(),
-    /** セッション更新日時 */
-    updatedAt: z.date(),
+  /** セッションの一意識別子（UUID v4） */
+  id: z.string().uuid(),
+  /** 現在の処理ステータス */
+  status: ProcessingStatusSchema,
+  /** 元動画のURL（アップロード後に設定、オプション） */
+  originalVideoUrl: z.string().optional(),
+  /** 処理済み動画のURL（処理完了後に設定、オプション） */
+  processedVideoUrl: z.string().optional(),
+  /** エラーメッセージ（エラー発生時のみ設定） */
+  error: z.string().optional(),
+  /** 処理の進捗率（0-100%） */
+  progress: z.number().min(0).max(100).default(0),
+  /** セッション作成日時 */
+  createdAt: z.date(),
+  /** セッション更新日時 */
+  updatedAt: z.date(),
 });
 
 /** 動画処理セッションの型 */

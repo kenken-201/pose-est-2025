@@ -50,7 +50,7 @@ export default {
     const response = await requestHandler(request, {
       cloudflare: { env, ctx },
     });
-    
+
     const newResponse = applySecurityHeaders(response);
 
     // HTML レスポンスの場合、キャッシュ無効化ヘッダーを付与

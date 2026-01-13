@@ -1,19 +1,19 @@
-import { cloudflare } from "@cloudflare/vite-plugin";
-import { reactRouter } from "@react-router/dev/vite";
-import { resolve } from "path";
-import { defineConfig } from "vite";
-import tsconfigPaths from "vite-tsconfig-paths";
+import { cloudflare } from '@cloudflare/vite-plugin';
+import { reactRouter } from '@react-router/dev/vite';
+import { resolve } from 'path';
+import { defineConfig } from 'vite';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   plugins: [
     // Cloudflare Workers ランタイムでサーバーコードを実行
-    cloudflare({ viteEnvironment: { name: "ssr" } }),
+    cloudflare({ viteEnvironment: { name: 'ssr' } }),
     reactRouter(),
     tsconfigPaths(),
   ],
   resolve: {
     alias: {
-      "@": resolve(__dirname, "./app"),
+      '@': resolve(__dirname, './app'),
     },
   },
   build: {
@@ -22,4 +22,3 @@ export default defineConfig({
     sourcemap: false,
   },
 });
-

@@ -23,26 +23,26 @@ import { ProcessingStatus } from '../../lib/services/video-processing.types';
  * ```
  */
 export interface VideoUploadZoneProps {
-    /**
-     * ファイルが選択された時に呼ばれるコールバック関数
-     * @param file - 選択された動画ファイル
-     */
-    onFileSelect: (file: File) => void;
+  /**
+   * ファイルが選択された時に呼ばれるコールバック関数
+   * @param file - 選択された動画ファイル
+   */
+  onFileSelect: (file: File) => void;
 
-    /** ドラッグ中かどうか（スタイリング用、外部から制御する場合） */
-    isDragActive?: boolean;
+  /** ドラッグ中かどうか（スタイリング用、外部から制御する場合） */
+  isDragActive?: boolean;
 
-    /** コンポーネントを無効化するかどうか（処理中など） */
-    disabled?: boolean;
+  /** コンポーネントを無効化するかどうか（処理中など） */
+  disabled?: boolean;
 
-    /** 最大ファイルサイズ（バイト）、超過した場合はエラー */
-    maxSize?: number;
+  /** 最大ファイルサイズ（バイト）、超過した場合はエラー */
+  maxSize?: number;
 
-    /** 受け入れるファイルタイプ（MIMEタイプと拡張子のマッピング） */
-    acceptedTypes?: Record<string, string[]>;
+  /** 受け入れるファイルタイプ（MIMEタイプと拡張子のマッピング） */
+  acceptedTypes?: Record<string, string[]>;
 
-    /** 追加のCSSクラス名 */
-    className?: string;
+  /** 追加のCSSクラス名 */
+  className?: string;
 }
 
 /**
@@ -61,32 +61,32 @@ export interface VideoUploadZoneProps {
  * ```
  */
 export interface VideoPlayerProps {
-    /** 再生する動画のURL */
-    url: string;
+  /** 再生する動画のURL */
+  url: string;
 
-    /** 動画読み込み前に表示するサムネイル画像のURL */
-    poster?: string;
+  /** 動画読み込み前に表示するサムネイル画像のURL */
+  poster?: string;
 
-    /** 自動再生するかどうか（ブラウザのポリシーに注意） */
-    autoPlay?: boolean;
+  /** 自動再生するかどうか（ブラウザのポリシーに注意） */
+  autoPlay?: boolean;
 
-    /** ループ再生するかどうか */
-    loop?: boolean;
+  /** ループ再生するかどうか */
+  loop?: boolean;
 
-    /** ミュート状態で開始するかどうか */
-    muted?: boolean;
+  /** ミュート状態で開始するかどうか */
+  muted?: boolean;
 
-    /** 再生コントロール（再生/停止/シークバー等）を表示するかどうか */
-    controls?: boolean;
+  /** 再生コントロール（再生/停止/シークバー等）を表示するかどうか */
+  controls?: boolean;
 
-    /** 追加のCSSクラス名 */
-    className?: string;
+  /** 追加のCSSクラス名 */
+  className?: string;
 
-    /** 動画再生が終了した時に呼ばれるコールバック */
-    onEnded?: () => void;
+  /** 動画再生が終了した時に呼ばれるコールバック */
+  onEnded?: () => void;
 
-    /** 動画読み込みや再生でエラーが発生した時に呼ばれるコールバック */
-    onError?: (error: unknown) => void;
+  /** 動画読み込みや再生でエラーが発生した時に呼ばれるコールバック */
+  onError?: (error: unknown) => void;
 }
 
 /**
@@ -108,18 +108,18 @@ export interface VideoPlayerProps {
  * ```
  */
 export interface ProcessingOverlayProps {
-    /** 現在の処理ステータス */
-    status: ProcessingStatus;
+  /** 現在の処理ステータス */
+  status: ProcessingStatus;
 
-    /** 処理の進捗率（0-100） */
-    progress?: number;
+  /** 処理の進捗率（0-100） */
+  progress?: number;
 
-    /** ユーザーに表示するメッセージ */
-    message?: string;
+  /** ユーザーに表示するメッセージ */
+  message?: string;
 
-    /** キャンセルボタンが押された時に呼ばれるコールバック（undefinedの場合はボタン非表示） */
-    onCancel?: () => void;
+  /** キャンセルボタンが押された時に呼ばれるコールバック（undefinedの場合はボタン非表示） */
+  onCancel?: () => void;
 
-    /** 追加のCSSクラス名 */
-    className?: string;
+  /** 追加のCSSクラス名 */
+  className?: string;
 }

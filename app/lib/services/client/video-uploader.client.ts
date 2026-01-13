@@ -17,56 +17,52 @@ import { APP_CONFIG } from '../../config/constants';
  * API経由で処理を開始します。アップロード進捗の監視が可能です。
  */
 export const videoUploader = {
-    /**
-     * 動画をアップロードして処理を開始する
-     *
-     * @param file - アップロードする動画ファイル
-     * @param onProgress - 進捗コールバック（0-100）
-     * @returns 処理結果
-     * @throws AppAPIError - バリデーションエラーまたはAPIエラー
-     *
-     * @example
-     * ```typescript
-     * const result = await videoUploader.uploadVideo(file, (progress) => {
-     *     console.log(`Upload: ${progress}%`);
-     * });
-     * ```
-     */
-    async uploadVideo(
-        file: File,
-        onProgress?: (percent: number) => void
-    ): Promise<VideoProcessResponse> {
-        // 1. クライアントサイドバリデーション
-        const validation = validateVideoFile(file);
-        if (!validation.valid) {
-            throw new AppAPIError(
-                validation.error || 'Invalid video file',
-                'VALIDATION_ERROR',
-                400
-            );
-        }
+  /**
+   * 動画をアップロードして処理を開始する
+   *
+   * @param file - アップロードする動画ファイル
+   * @param onProgress - 進捗コールバック（0-100）
+   * @returns 処理結果
+   * @throws AppAPIError - バリデーションエラーまたはAPIエラー
+   *
+   * @example
+   * ```typescript
+   * const result = await videoUploader.uploadVideo(file, (progress) => {
+   *     console.log(`Upload: ${progress}%`);
+   * });
+   * ```
+   */
+  async uploadVideo(
+    file: File,
+    onProgress?: (percent: number) => void
+  ): Promise<VideoProcessResponse> {
+    // 1. クライアントサイドバリデーション
+    const validation = validateVideoFile(file);
+    if (!validation.valid) {
+      throw new AppAPIError(validation.error || 'Invalid video file', 'VALIDATION_ERROR', 400);
+    }
 
-        const formData = new FormData();
-        formData.append('video', file);
+    const formData = new FormData();
+    formData.append('video', file);
 
-        // 2. アップロードリクエスト (BFFへ)
-        // Important Fix #4: Use APP_CONFIG instead of hardcoded endpoint
-        const response = await apiClient.post<VideoProcessResponse>(
-            APP_CONFIG.API.ENDPOINTS.BFF_UPLOAD,
-            formData,
-            {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-                onUploadProgress: (progressEvent) => {
-                    if (onProgress && progressEvent.total) {
-                        const percent = Math.round((progressEvent.loaded / progressEvent.total) * 100);
-                        onProgress(percent);
-                    }
-                },
-            }
-        );
+    // 2. アップロードリクエスト (Direct to Backend)
+    // Fix: Use Direct Backend Endpoint instead of missing BFF route
+    const response = await apiClient.post<VideoProcessResponse>(
+      APP_CONFIG.API.ENDPOINTS.UPLOAD,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: progressEvent => {
+          if (onProgress && progressEvent.total) {
+            const percent = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+            onProgress(percent);
+          }
+        },
+      }
+    );
 
-        return response.data;
-    },
+    return response.data;
+  },
 };

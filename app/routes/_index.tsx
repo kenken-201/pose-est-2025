@@ -1,7 +1,7 @@
 export function meta() {
   return [
-    { title: "KenKen姿勢推定スポーツ分析" },
-    { name: "description", content: "動画をアップロードしてAI姿勢推定を実行" },
+    { title: 'KenKen姿勢推定スポーツ分析' },
+    { name: 'description', content: '動画をアップロードしてAI姿勢推定を実行' },
   ];
 }
 
@@ -16,9 +16,7 @@ export default function HomePage() {
           <div className="max-w-4xl mx-auto">
             {/* ヘッダーセクション */}
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                高度な姿勢推定AIを体験
-              </h2>
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">高度な姿勢推定AIを体験</h2>
               <p className="text-gray-600 text-lg">
                 動画をアップロードして、AIによる姿勢推定とスポーツフォーム分析を実行
               </p>
