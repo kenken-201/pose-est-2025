@@ -446,4 +446,12 @@ Cloudflare のプラットフォーム機能を活用し、アプリケーショ
 - [x] **11-3c: 動作確認**
   - [x] Dev環境 (`dev.kenken-pose-est.online`) でのアップロード成功確認
 
+#### ✅ タスク 11-4: Frontend CI Workflow
+
+- [x] **11-4a: CI ワークフロー作成**
+  - [x] `.github/workflows/ci.yml` 作成
+  - [x] Quality Check (Lint, Format, Typecheck, Test, Coverage)
+- [ ] **11-4b: 動作確認**
+  - [ ] GitHub Actions での実行確認
+
 ---
