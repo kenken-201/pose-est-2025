@@ -46,7 +46,7 @@ describe('VideoUploader Client Service', () => {
 
     // Important Fix #4: Verify APP_CONFIG endpoint is used
     expect(apiClient.post).toHaveBeenCalledWith(
-      APP_CONFIG.API.ENDPOINTS.BFF_UPLOAD,
+      APP_CONFIG.API.ENDPOINTS.UPLOAD,
       expect.any(FormData),
       expect.objectContaining({
         headers: { 'Content-Type': 'multipart/form-data' },

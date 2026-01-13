@@ -451,6 +451,7 @@ Cloudflare のプラットフォーム機能を活用し、アプリケーショ
 - [x] **11-4a: CI ワークフロー作成**
   - [x] `.github/workflows/ci.yml` 作成
   - [x] Quality Check (Lint, Format, Typecheck, Test, Coverage)
+  - [x] **Fix**: CI エラー修正 (Code Style, ESLint, Unit Tests)
 - [ ] **11-4b: 動作確認**
   - [ ] GitHub Actions での実行確認
 
