@@ -12,11 +12,11 @@
  * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
  */
 export function applyHtmlCacheHeaders(response: Response): Response {
-  const contentType = response.headers.get("Content-Type");
+  const contentType = response.headers.get('Content-Type');
 
   // Content-Type が text/html を含む場合のみ適用
-  if (contentType && contentType.includes("text/html")) {
-    response.headers.set("Cache-Control", "no-cache, no-store, must-revalidate");
+  if (contentType && contentType.includes('text/html')) {
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
   }
 
   return response;

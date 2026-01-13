@@ -10,24 +10,24 @@ const mockReset = vi.fn();
 
 // useVideoProcessing のモック
 vi.mock('@/lib/hooks/useVideoProcessing', () => ({
-    useVideoProcessing: () => ({
-        processVideo: mockProcessVideo,
-        reset: mockReset,
-    }),
+  useVideoProcessing: () => ({
+    processVideo: mockProcessVideo,
+    reset: mockReset,
+  }),
 }));
 
 // useVideoStore のモック（テストごとに状態を変更できるようにする）
 const mockStoreState = vi.fn();
 vi.mock('@/lib/stores/video.store', () => ({
-    useVideoStore: () => mockStoreState(),
-    ProcessingStatus: {
-        IDLE: 'IDLE',
-        UPLOADING: 'UPLOADING',
-        PROCESSING: 'PROCESSING',
-        COMPLETED: 'COMPLETED',
-        ERROR: 'ERROR',
-    },
-    isAppAPIError: (error: unknown) => (error as { name?: string })?.name === 'AppAPIError',
+  useVideoStore: () => mockStoreState(),
+  ProcessingStatus: {
+    IDLE: 'IDLE',
+    UPLOADING: 'UPLOADING',
+    PROCESSING: 'PROCESSING',
+    COMPLETED: 'COMPLETED',
+    ERROR: 'ERROR',
+  },
+  isAppAPIError: (error: unknown) => (error as { name?: string })?.name === 'AppAPIError',
 }));
 
 /**
@@ -44,128 +44,128 @@ vi.mock('@/lib/stores/video.store', () => ({
  * 8. レイアウト安定性: ContainerWrapper により一貫したサイズが維持されること
  */
 describe('ProcessingContainer', () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('renders UploadDropzone when status is IDLE', () => {
+    mockStoreState.mockReturnValue({
+      status: ProcessingStatus.IDLE,
+      progress: 0,
+      result: null,
+      error: null,
     });
 
-    it('renders UploadDropzone when status is IDLE', () => {
-        mockStoreState.mockReturnValue({
-            status: ProcessingStatus.IDLE,
-            progress: 0,
-            result: null,
-            error: null,
-        });
+    render(<ProcessingContainer />);
+    expect(screen.getByText(/動画をドラッグ＆ドロップ/i)).toBeInTheDocument();
+    expect(screen.getByTestId('processing-container')).toBeInTheDocument();
+  });
 
-        render(<ProcessingContainer />);
-        expect(screen.getByText(/動画をドラッグ＆ドロップ/i)).toBeInTheDocument();
-        expect(screen.getByTestId('processing-container')).toBeInTheDocument();
+  it('renders ProgressOverlay when status is UPLOADING', () => {
+    mockStoreState.mockReturnValue({
+      status: ProcessingStatus.UPLOADING,
+      progress: 50,
+      result: null,
+      error: null,
     });
 
-    it('renders ProgressOverlay when status is UPLOADING', () => {
-        mockStoreState.mockReturnValue({
-            status: ProcessingStatus.UPLOADING,
-            progress: 50,
-            result: null,
-            error: null,
-        });
+    render(<ProcessingContainer />);
+    expect(screen.getByText('50%')).toBeInTheDocument();
+    expect(screen.getByText(/アップロード中/i)).toBeInTheDocument();
+    expect(screen.getByTestId('progress-overlay')).toBeInTheDocument();
+  });
 
-        render(<ProcessingContainer />);
-        expect(screen.getByText('50%')).toBeInTheDocument();
-        expect(screen.getByText(/アップロード中/i)).toBeInTheDocument();
-        expect(screen.getByTestId('progress-overlay')).toBeInTheDocument();
+  it('renders ProgressOverlay when status is PROCESSING', () => {
+    mockStoreState.mockReturnValue({
+      status: ProcessingStatus.PROCESSING,
+      progress: 100,
+      result: null,
+      error: null,
     });
 
-    it('renders ProgressOverlay when status is PROCESSING', () => {
-        mockStoreState.mockReturnValue({
-            status: ProcessingStatus.PROCESSING,
-            progress: 100,
-            result: null,
-            error: null,
-        });
+    render(<ProcessingContainer />);
+    expect(screen.getByText(/動画を処理中/i)).toBeInTheDocument();
+  });
 
-        render(<ProcessingContainer />);
-        expect(screen.getByText(/動画を処理中/i)).toBeInTheDocument();
+  it('renders VideoPlayer when status is COMPLETED', () => {
+    mockStoreState.mockReturnValue({
+      status: ProcessingStatus.COMPLETED,
+      progress: 100,
+      result: {
+        signed_url: 'http://example.com/result.mp4',
+        video_meta: { width: 1920, height: 1080, fps: 30, duration_sec: 10, has_audio: false },
+        total_poses: 0,
+        processing_time_sec: 0,
+      },
+      error: null,
     });
 
-    it('renders VideoPlayer when status is COMPLETED', () => {
-        mockStoreState.mockReturnValue({
-            status: ProcessingStatus.COMPLETED,
-            progress: 100,
-            result: { 
-                signed_url: 'http://example.com/result.mp4', 
-                video_meta: { width: 1920, height: 1080, fps: 30, duration_sec: 10, has_audio: false }, 
-                total_poses: 0, 
-                processing_time_sec: 0 
-            },
-            error: null,
-        });
+    render(<ProcessingContainer />);
+    const videoElement = screen.getByTestId('video-player');
+    expect(videoElement).toBeInTheDocument();
+    expect(videoElement).toHaveAttribute('src', 'http://example.com/result.mp4');
+  });
 
-        render(<ProcessingContainer />);
-        const videoElement = screen.getByTestId('video-player');
-        expect(videoElement).toBeInTheDocument();
-        expect(videoElement).toHaveAttribute('src', 'http://example.com/result.mp4');
+  it('renders ErrorDisplay when status is ERROR', () => {
+    mockStoreState.mockReturnValue({
+      status: ProcessingStatus.ERROR,
+      progress: 0,
+      result: null,
+      error: new AppAPIError('Video too short', 'VIDEO_TOO_SHORT', 400),
     });
 
-    it('renders ErrorDisplay when status is ERROR', () => {
-        mockStoreState.mockReturnValue({
-            status: ProcessingStatus.ERROR,
-            progress: 0,
-            result: null,
-            error: new AppAPIError('Video too short', 'VIDEO_TOO_SHORT', 400),
-        });
+    render(<ProcessingContainer />);
+    expect(screen.getByText(/動画が短すぎます/)).toBeInTheDocument();
+    expect(screen.getByTestId('error-display')).toBeInTheDocument();
+  });
 
-        render(<ProcessingContainer />);
-        expect(screen.getByText(/動画が短すぎます/)).toBeInTheDocument();
-        expect(screen.getByTestId('error-display')).toBeInTheDocument();
+  it('calls processVideo when file is selected', async () => {
+    mockStoreState.mockReturnValue({
+      status: ProcessingStatus.IDLE,
+      progress: 0,
+      result: null,
+      error: null,
     });
 
-    it('calls processVideo when file is selected', async () => {
-         mockStoreState.mockReturnValue({
-            status: ProcessingStatus.IDLE,
-            progress: 0,
-            result: null,
-            error: null,
-        });
+    render(<ProcessingContainer />);
+    const input = screen.getByTestId('dropzone-input');
+    const file = new File(['dummy'], 'test.mp4', { type: 'video/mp4' });
 
-        render(<ProcessingContainer />);
-        const input = screen.getByTestId('dropzone-input');
-        const file = new File(['dummy'], 'test.mp4', { type: 'video/mp4' });
+    fireEvent.change(input, { target: { files: [file] } });
 
-        fireEvent.change(input, { target: { files: [file] } });
+    await waitFor(() => {
+      expect(mockProcessVideo).toHaveBeenCalledWith(file);
+    });
+  });
 
-        await waitFor(() => {
-            expect(mockProcessVideo).toHaveBeenCalledWith(file);
-        });
+  it('calls reset when retry button is clicked', () => {
+    mockStoreState.mockReturnValue({
+      status: ProcessingStatus.ERROR,
+      progress: 0,
+      result: null,
+      error: new Error('Retry test'),
     });
 
-    it('calls reset when retry button is clicked', () => {
-        mockStoreState.mockReturnValue({
-            status: ProcessingStatus.ERROR,
-            progress: 0,
-            result: null,
-            error: new Error('Retry test'),
-        });
+    render(<ProcessingContainer />);
+    const retryButton = screen.getByRole('button', { name: /再試行/i });
+    fireEvent.click(retryButton);
 
-        render(<ProcessingContainer />);
-        const retryButton = screen.getByRole('button', { name: /再試行/i });
-        fireEvent.click(retryButton);
+    expect(mockReset).toHaveBeenCalledTimes(1);
+  });
 
-        expect(mockReset).toHaveBeenCalledTimes(1);
+  it('has consistent container sizing to prevent layout shift', () => {
+    mockStoreState.mockReturnValue({
+      status: ProcessingStatus.IDLE,
+      progress: 0,
+      result: null,
+      error: null,
     });
 
-    it('has consistent container sizing to prevent layout shift', () => {
-        mockStoreState.mockReturnValue({
-            status: ProcessingStatus.IDLE,
-            progress: 0,
-            result: null,
-            error: null,
-        });
+    render(<ProcessingContainer />);
+    const container = screen.getByTestId('processing-container');
 
-        render(<ProcessingContainer />);
-        const container = screen.getByTestId('processing-container');
-        
-        // ContainerWrapper が適用されていることを確認
-        expect(container).toHaveClass('max-w-xl');
-        expect(container).toHaveClass('h-64');
-    });
+    // ContainerWrapper が適用されていることを確認
+    expect(container).toHaveClass('max-w-xl');
+    expect(container).toHaveClass('h-64');
+  });
 });

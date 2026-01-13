@@ -1,4 +1,4 @@
-import type { Config } from "@react-router/dev/config";
+import type { Config } from '@react-router/dev/config';
 
 /**
  * React Router v7 設定
@@ -13,4 +13,3 @@ export default {
     v8_viteEnvironmentApi: true,
   },
 } satisfies Config;
-
