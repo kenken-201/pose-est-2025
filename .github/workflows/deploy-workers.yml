@@ -4,12 +4,12 @@ on:
   push:
     branches: [main, develop]
     paths:
-      - 'pose-est-front/**'
+      - '**'
       - '.github/workflows/deploy-workers.yml'
   pull_request:
     branches: [main, develop]
     paths:
-      - 'pose-est-front/**'
+      - '**'
       - '.github/workflows/deploy-workers.yml'
 
 jobs:
@@ -24,15 +24,15 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-          cache-dependency-path: pose-est-front/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install Dependencies
-        working-directory: pose-est-front
         run: npm ci
 
       - name: Build
-        working-directory: pose-est-front
         run: npm run build
+        env:
+          VITE_CF_BEACON_TOKEN: ${{ secrets.VITE_CF_BEACON_TOKEN }}
 
       # develop / PR: Deploy to Preview
       - name: Deploy (Preview)
@@ -41,7 +41,6 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: pose-est-front
           command: deploy
 
       # main: Deploy to Production
@@ -51,5 +50,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: pose-est-front
           command: deploy --env production
+
