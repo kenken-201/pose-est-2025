@@ -68,14 +68,17 @@ run_step() {
     fi
 }
 
-# 1. TypeScript 型チェック
+# 1. TypeScript 型チェック (CI準拠: typegen含む)
+run_step "TypeScript TypeGen" "npm run typegen" || true
 run_step "TypeScript Type Check" "npm run typecheck" || true
 
-# 2. ESLint チェック
+# 2. コードスタイル (Prettier & ESLint)
 if $FIX_MODE; then
-    run_step "ESLint (with auto-fix)" "npm run lint:fix" || true
+    run_step "Prettier Format (Write)" "npm run format" || true
+    run_step "ESLint (Fix)" "npm run lint:fix" || true
 else
-    run_step "ESLint Check" "npm run lint" || true
+    run_step "Prettier Format (Check)" "npm run format:check" || true
+    run_step "ESLint (Check)" "npm run lint" || true
 fi
 
 # 3. 単体テスト + カバレッジ
