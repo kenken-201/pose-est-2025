@@ -399,3 +399,37 @@ Cloudflare のプラットフォーム機能を活用し、アプリケーショ
 - [x] 環境変数 `VITE_CF_BEACON_TOKEN` の設定
 - [x] `app/root.tsx` へのスクリプトタグ実装
 - [x] 動作確認（本番デプロイ後の計測確認）
+
+#### ⬜ タスク 11-2: 本番環境デプロイとカスタムドメイン有効化
+
+フロントエンドアプリケーションを本番環境 (`kenken-pose-est.online`) にデプロイし、カスタムドメインでアクセス可能にする。
+
+**前提条件**:
+
+- インフラ側 (Terraform) で本番用カスタムドメイン (`kenken-pose-est.online` → `pose-est-frontend`) 設定済み
+- `wrangler.jsonc` に `[env.production]` 設定済み
+- `deploy-workers.yml` で `main` ブランチ → Production デプロイ設定済み
+
+**サブタスク**:
+
+- [x] **11-2a: GitHub Secrets の確認**
+  - [x] `CLOUDFLARE_API_TOKEN` が設定されているか確認
+  - [x] `CLOUDFLARE_ACCOUNT_ID` が設定されているか確認
+  - [x] `VITE_CF_BEACON_TOKEN` が設定されているか確認
+
+- [x] **11-2b: wrangler.jsonc の Production 設定確認**
+  - [x] `VITE_API_BASE_URL` が本番 API URL を指しているか確認
+  - [x] `VITE_APP_NAME` が本番用の名称になっているか確認
+
+- [ ] **11-2c: 本番デプロイの実行**
+  - [ ] `main` ブランチへマージ (develop → main PR)
+  - [ ] GitHub Actions ワークフローの成功確認
+  - [ ] Cloudflare Dashboard での Workers デプロイ確認
+
+- [ ] **11-2d: カスタムドメイン動作確認**
+  - [ ] `https://kenken-pose-est.online` でアクセス可能か確認
+  - [ ] HTTPS 証明書が有効か確認 (ブラウザで鍵マーク)
+  - [ ] セキュリティヘッダーの付与確認 (`curl -I`)
+  - [ ] Web Analytics でデータ受信確認
+
+---
