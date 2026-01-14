@@ -21,4 +21,7 @@ export default defineConfig({
     // ファイルサイズが増加、などの懸念があるため本番環境では無効化
     sourcemap: false,
   },
+  optimizeDeps: {
+    include: ['react', 'react-dom/client', 'react-router-dom', 'react-router'],
+  },
 });
