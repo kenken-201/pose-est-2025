@@ -1,0 +1,14 @@
+# React Router 自動生成ファイル
+.react-router/
+
+# Wrangler キャッシュ
+.wrangler/
+
+# ビルド出力
+build/
+
+# 依存関係
+node_modules/
+
+# カバレッジ
+coverage/
