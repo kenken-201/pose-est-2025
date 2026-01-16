@@ -58,6 +58,9 @@ export const UploadDropzone: FC<UploadDropzoneProps> = ({
   const inputId = 'upload-dropzone-file-input';
 
   const handleManualFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // eslint-disable-next-line no-console
+    console.log('[UploadDropzone] handleManualFileSelect called', e.target.files);
+
     const files = e.target.files;
     if (!files || files.length === 0) {
       return;
@@ -127,6 +130,9 @@ export const UploadDropzone: FC<UploadDropzoneProps> = ({
         ])
         .join(',')
     : undefined;
+
+  // eslint-disable-next-line no-console
+  console.log('[UploadDropzone] Rendered/Mounted');
 
   return (
     <div className="w-full max-w-xl mx-auto">
