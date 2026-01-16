@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "pose-est-frontend",
+  "name": "pose-est-frontend-dev",
   "main": "./workers/app.ts",
   "compatibility_date": "2026-01-06",
   "compatibility_flags": ["nodejs_compat"],
@@ -11,14 +11,15 @@
   "vars": {
     "VITE_API_BASE_URL": "https://api-dev.kenken-pose-est.online",
     "VITE_APP_NAME": "KenKen Pose Est (Dev)",
-    "VITE_API_TIMEOUT": "360000"
+    "VITE_API_TIMEOUT": "360000",
   },
   "env": {
     "production": {
+      "name": "pose-est-frontend-prod",
       "vars": {
         "VITE_API_BASE_URL": "https://api.kenken-pose-est.online",
         "VITE_APP_NAME": "KenKen Pose Est",
-        "VITE_API_TIMEOUT": "360000"
+        "VITE_API_TIMEOUT": "360000",
       },
     },
   },
