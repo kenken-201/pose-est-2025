@@ -1,0 +1,30 @@
+# React Router 自動生成ファイル
+.react-router/
+
+# Wrangler キャッシュ
+.wrangler/
+
+# ビルド出力
+build/
+public/build/
+
+# 依存関係
+node_modules/
+.pnp
+.pnp.js
+
+# カバレッジ
+coverage/
+
+# 環境変数
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+
+# その他
+.DS_Store
+*.log
+

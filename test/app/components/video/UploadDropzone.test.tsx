@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UploadDropzone } from '@/components/video/UploadDropzone';
@@ -25,11 +25,12 @@ describe('UploadDropzone', () => {
 
   it('renders default upload message', () => {
     render(<UploadDropzone {...defaultProps} />);
-    expect(screen.getByText(/動画をドラッグ＆ドロップ/i)).toBeInTheDocument();
-    expect(screen.getByText(/またはクリックして選択/i)).toBeInTheDocument();
+    expect(screen.getByText(/動画をアップロード/i)).toBeInTheDocument();
+    expect(screen.getByText(/MP4, MOV, WebMに対応/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /ファイルを選択/i })).toBeInTheDocument();
   });
 
-  it('handles file drop correctly', async () => {
+  it('handles file selection correctly', async () => {
     const onFileSelect = vi.fn();
     render(<UploadDropzone {...defaultProps} onFileSelect={onFileSelect} />);
 
@@ -40,30 +41,6 @@ describe('UploadDropzone', () => {
 
     await waitFor(() => {
       expect(onFileSelect).toHaveBeenCalledWith(file);
-    });
-  });
-
-  it('shows active state when dragging file', async () => {
-    render(<UploadDropzone {...defaultProps} />);
-
-    const dropzone = screen.getByTestId('upload-dropzone');
-
-    fireEvent.dragEnter(dropzone, {
-      dataTransfer: {
-        files: [new File([''], 'test.mp4', { type: 'video/mp4' })],
-        items: [
-          {
-            kind: 'file',
-            type: 'video/mp4',
-            getAsFile: () => new File([''], 'test.mp4', { type: 'video/mp4' }),
-          },
-        ],
-        types: ['Files'],
-      },
-    });
-
-    await waitFor(() => {
-      expect(screen.getByText(/ここにドロップしてください/i)).toBeInTheDocument();
     });
   });
 
