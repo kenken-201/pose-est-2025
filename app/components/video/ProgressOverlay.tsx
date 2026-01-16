@@ -28,7 +28,7 @@ export const ProgressOverlay: FC<ProgressOverlayProps> = ({ status, progress, me
 
   return (
     <div
-      className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-lg animate-in fade-in duration-200"
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex flex-col items-center justify-center animate-in fade-in duration-200"
       role="status"
       aria-live="polite"
       aria-busy={isActive}
@@ -37,7 +37,7 @@ export const ProgressOverlay: FC<ProgressOverlayProps> = ({ status, progress, me
       <div className="w-64 space-y-4 text-center">
         {status === ProcessingStatus.UPLOADING ? (
           <>
-            <div className="flex justify-between text-sm font-medium text-gray-700">
+            <div className="flex justify-between text-sm font-medium text-white">
               <span>{message || 'アップロード中...'}</span>
               <span>{Math.round(progress)}%</span>
             </div>
@@ -47,7 +47,7 @@ export const ProgressOverlay: FC<ProgressOverlayProps> = ({ status, progress, me
               aria-valuemin={0}
               aria-valuemax={100}
               aria-label="アップロード進捗"
-              className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden"
+              className="w-full bg-white/30 rounded-full h-2.5 overflow-hidden"
             >
               <div
                 className="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-out"
@@ -60,7 +60,7 @@ export const ProgressOverlay: FC<ProgressOverlayProps> = ({ status, progress, me
             <div className="flex justify-center">
               <Loader2 className="w-10 h-10 text-blue-500 animate-spin" aria-hidden="true" />
             </div>
-            <p className="text-sm font-medium text-gray-700 animate-pulse">
+            <p className="text-sm font-medium text-white animate-pulse">
               {message || '動画を処理中...'}
             </p>
           </>
