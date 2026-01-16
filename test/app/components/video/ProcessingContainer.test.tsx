@@ -57,7 +57,7 @@ describe('ProcessingContainer', () => {
     });
 
     render(<ProcessingContainer />);
-    expect(screen.getByText(/動画をドラッグ＆ドロップ/i)).toBeInTheDocument();
+    expect(screen.getByText(/動画をアップロード/i)).toBeInTheDocument();
     expect(screen.getByTestId('processing-container')).toBeInTheDocument();
   });
 

@@ -12,6 +12,14 @@
  * @returns パースされた数値、またはデフォルト値
  */
 const getEnvNumber = (key: string, defaultValue: number): number => {
+  // 1. window.ENV チェック (クライアント実行時)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if (typeof window !== 'undefined' && (window as any).ENV?.[key]) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const parsed = parseInt((window as any).ENV[key], 10);
+    return isNaN(parsed) ? defaultValue : parsed;
+  }
+  // 2. import.meta.env チェック (ビルド時/SSR時)
   if (typeof import.meta !== 'undefined' && import.meta.env?.[key]) {
     const parsed = parseInt(import.meta.env[key], 10);
     return isNaN(parsed) ? defaultValue : parsed;
@@ -26,6 +34,13 @@ const getEnvNumber = (key: string, defaultValue: number): number => {
  * @returns 環境変数の値、またはデフォルト値
  */
 const getEnvString = (key: string, defaultValue: string): string => {
+  // 1. window.ENV チェック (クライアント実行時)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if (typeof window !== 'undefined' && (window as any).ENV?.[key]) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (window as any).ENV[key];
+  }
+  // 2. import.meta.env チェック (ビルド時/SSR時)
   if (typeof import.meta !== 'undefined' && import.meta.env?.[key]) {
     return import.meta.env[key];
   }
@@ -47,9 +62,13 @@ export const APP_CONFIG = {
   /** API通信関連の設定 */
   API: {
     /** バックエンドAPIのベースURL */
-    BASE_URL: getEnvString('VITE_API_BASE_URL', 'http://localhost:8000'),
+    get BASE_URL() {
+      return getEnvString('VITE_API_BASE_URL', 'http://localhost:8000');
+    },
     /** APIリクエストのタイムアウト時間（ミリ秒） */
-    TIMEOUT_MS: getEnvNumber('VITE_API_TIMEOUT', 30000),
+    get TIMEOUT_MS() {
+      return getEnvNumber('VITE_API_TIMEOUT', 30000);
+    },
     /** APIエンドポイントのパス定義 */
     ENDPOINTS: {
       /** 動画処理エンドポイント (Backend) */
@@ -64,7 +83,9 @@ export const APP_CONFIG = {
   /** ファイルアップロード関連の設定 */
   UPLOAD: {
     /** アップロード可能な最大ファイルサイズ（バイト） */
-    MAX_SIZE_BYTES: getEnvNumber('VITE_MAX_VIDEO_SIZE', 100 * 1024 * 1024),
+    get MAX_SIZE_BYTES() {
+      return getEnvNumber('VITE_MAX_VIDEO_SIZE', 100 * 1024 * 1024);
+    },
     /** 受け入れ可能なMIMEタイプと拡張子のマッピング */
     ACCEPTED_TYPES: {
       'video/mp4': ['.mp4'],

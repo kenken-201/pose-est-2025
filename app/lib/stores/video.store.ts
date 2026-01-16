@@ -25,7 +25,11 @@ export enum ProcessingStatus {
  * 不正な状態遷移を防ぐための状態マシン定義
  */
 const VALID_TRANSITIONS: Record<ProcessingStatus, ProcessingStatus[]> = {
-  [ProcessingStatus.IDLE]: [ProcessingStatus.VALIDATING, ProcessingStatus.UPLOADING],
+  [ProcessingStatus.IDLE]: [
+    ProcessingStatus.VALIDATING,
+    ProcessingStatus.UPLOADING,
+    ProcessingStatus.ERROR,
+  ],
   [ProcessingStatus.VALIDATING]: [
     ProcessingStatus.UPLOADING,
     ProcessingStatus.ERROR,

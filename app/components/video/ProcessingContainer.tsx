@@ -35,10 +35,21 @@ const ContainerWrapper: FC<{
  */
 export const ProcessingContainer: FC = () => {
   // ストアから状態を取得
-  const { status, progress, result, error } = useVideoStore();
+  const { status, progress, result, error, setError } = useVideoStore();
 
   // フックからアクションを取得
   const { processVideo, reset } = useVideoProcessing();
+
+  /**
+   * ファイル拒否時のハンドラー
+   * react-dropzone からのエラーをストアに伝播させ、ErrorDisplay で表示する
+   */
+  const handleFileRejected = (errors: { code: string; message: string }[]) => {
+    if (errors.length > 0) {
+      const errorMessage = errors.map(e => e.message).join(', ');
+      setError(new Error(errorMessage));
+    }
+  };
 
   // IDLE状態: アップロード用のドロップゾーンを表示
   if (status === ProcessingStatus.IDLE) {
@@ -46,6 +57,7 @@ export const ProcessingContainer: FC = () => {
       <ContainerWrapper>
         <UploadDropzone
           onFileSelect={processVideo}
+          onFileRejected={handleFileRejected}
           accept={{
             'video/mp4': ['.mp4'],
             'video/quicktime': ['.mov'],

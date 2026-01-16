@@ -174,4 +174,23 @@ describe('VideoStore', () => {
     expect(state.result).toBeNull();
     expect(state.error).toBeNull();
   });
+
+  /**
+   * IDLE → ERROR 直接遷移の検証
+   *
+   * ファイル選択時のバリデーションエラー（例: 不正なファイル形式）で
+   * IDLE 状態から直接 ERROR 状態に遷移できることを確認します。
+   */
+  it('should allow direct transition from IDLE to ERROR', () => {
+    const mockError = new Error('Invalid file type');
+
+    // IDLE → ERROR への直接遷移
+    act(() => {
+      useVideoStore.getState().setError(mockError);
+    });
+
+    const state = useVideoStore.getState();
+    expect(state.status).toBe(ProcessingStatus.ERROR);
+    expect(state.error).toEqual(mockError);
+  });
 });

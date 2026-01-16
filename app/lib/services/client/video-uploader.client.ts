@@ -43,7 +43,7 @@ export const videoUploader = {
     }
 
     const formData = new FormData();
-    formData.append('video', file);
+    formData.append('file', file);
 
     // 2. アップロードリクエスト (Direct to Backend)
     // Fix: Use Direct Backend Endpoint instead of missing BFF route
