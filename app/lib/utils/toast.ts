@@ -1,4 +1,4 @@
-import { toast } from 'sonner';
+import { toast, type ExternalToast } from 'sonner';
 
 /**
  * Toast Notification Utilities
@@ -9,23 +9,34 @@ import { toast } from 'sonner';
 /**
  * Shows a success toast notification.
  * @param message - The message to display
+ * @param options - Optional toast configuration (e.g., duration, description)
  */
-export const showSuccess = (message: string) => {
-  toast.success(message);
+export const showSuccess = (message: string, options?: ExternalToast) => {
+  toast.success(message, options);
 };
 
 /**
  * Shows an error toast notification.
  * @param message - The message to display
+ * @param options - Optional toast configuration
  */
-export const showError = (message: string) => {
-  toast.error(message);
+export const showError = (message: string, options?: ExternalToast) => {
+  toast.error(message, options);
 };
 
 /**
  * Shows an informational toast notification.
  * @param message - The message to display
+ * @param options - Optional toast configuration
  */
-export const showInfo = (message: string) => {
-  toast.info(message);
+export const showInfo = (message: string, options?: ExternalToast) => {
+  toast.info(message, options);
+};
+
+/**
+ * Dismisses a specific toast or all toasts.
+ * @param toastId - The ID of the toast to dismiss (optional)
+ */
+export const dismissToast = (toastId?: string | number) => {
+  toast.dismiss(toastId);
 };
