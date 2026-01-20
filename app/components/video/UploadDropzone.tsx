@@ -56,8 +56,9 @@ export const UploadDropzone: FC<UploadDropzoneProps> = ({
 }) => {
   const [localError, setLocalError] = useState<string | null>(null);
 
-  // デバッグ用: input の ID
+  // 要素のID定義
   const inputId = 'upload-dropzone-file-input';
+  const errorId = 'upload-dropzone-error';
 
   const handleManualFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -155,6 +156,7 @@ export const UploadDropzone: FC<UploadDropzoneProps> = ({
           disabled={disabled}
           data-testid="dropzone-input"
           aria-invalid={!!localError}
+          aria-describedby={localError ? errorId : undefined}
         />
 
         <div className="flex flex-col items-center text-center space-y-4">
@@ -191,6 +193,7 @@ export const UploadDropzone: FC<UploadDropzoneProps> = ({
             <p className="text-sm text-gray-500 max-w-xs mx-auto">
               {localError ? (
                 <span
+                  id={errorId}
                   className="text-red-500 font-medium"
                   data-testid="dropzone-error"
                   role="alert"
