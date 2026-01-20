@@ -1,5 +1,7 @@
 import { useState, type FC } from 'react';
 
+import { MAX_FILE_SIZE_DISPLAY } from '@/lib/constants/upload';
+
 /**
  * ファイル拒否エラーの型定義
  */
@@ -14,7 +16,7 @@ export interface FileError {
 const getLocalizedErrorMessage = (code: string): string => {
   switch (code) {
     case 'file-too-large':
-      return 'ファイルサイズが大きすぎます';
+      return `ファイルサイズが大きすぎます（最大 ${MAX_FILE_SIZE_DISPLAY}）`;
     case 'file-invalid-type':
       return '対応していないファイル形式です';
     case 'too-many-files':
@@ -54,13 +56,11 @@ export const UploadDropzone: FC<UploadDropzoneProps> = ({
 }) => {
   const [localError, setLocalError] = useState<string | null>(null);
 
-  // デバッグ用: input の ID
+  // 要素のID定義
   const inputId = 'upload-dropzone-file-input';
+  const errorId = 'upload-dropzone-error';
 
   const handleManualFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // eslint-disable-next-line no-console
-    console.log('[UploadDropzone] handleManualFileSelect called', e.target.files);
-
     const files = e.target.files;
     if (!files || files.length === 0) {
       return;
@@ -131,9 +131,6 @@ export const UploadDropzone: FC<UploadDropzoneProps> = ({
         .join(',')
     : undefined;
 
-  // eslint-disable-next-line no-console
-  console.log('[UploadDropzone] Rendered/Mounted');
-
   return (
     <div className="w-full max-w-xl mx-auto">
       <div
@@ -158,6 +155,8 @@ export const UploadDropzone: FC<UploadDropzoneProps> = ({
           accept={acceptString}
           disabled={disabled}
           data-testid="dropzone-input"
+          aria-invalid={!!localError}
+          aria-describedby={localError ? errorId : undefined}
         />
 
         <div className="flex flex-col items-center text-center space-y-4">
@@ -194,6 +193,7 @@ export const UploadDropzone: FC<UploadDropzoneProps> = ({
             <p className="text-sm text-gray-500 max-w-xs mx-auto">
               {localError ? (
                 <span
+                  id={errorId}
                   className="text-red-500 font-medium"
                   data-testid="dropzone-error"
                   role="alert"
@@ -201,7 +201,7 @@ export const UploadDropzone: FC<UploadDropzoneProps> = ({
                   {localError}
                 </span>
               ) : (
-                'MP4, MOV, WebMに対応（最大 500MB）'
+                `MP4, MOV, WebMに対応（最大 ${MAX_FILE_SIZE_DISPLAY}）`
               )}
             </p>
           </div>
@@ -214,6 +214,14 @@ export const UploadDropzone: FC<UploadDropzoneProps> = ({
           <label
             htmlFor={disabled ? undefined : inputId}
             onClick={handleLabelClick}
+            onKeyDown={e => {
+              if (!disabled && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault();
+                // inputをクリックしてファイル選択ダイアログを開く
+                const input = document.getElementById(inputId);
+                input?.click();
+              }
+            }}
             className={`
               px-6 py-2.5 rounded-lg text-sm font-medium text-white shadow-sm transition-all
               inline-block select-none

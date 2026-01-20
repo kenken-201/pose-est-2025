@@ -147,4 +147,51 @@ describe('useVideoProcessing Hook', () => {
       expect(state.error).toEqual(mockError);
     });
   });
+
+  /**
+   * リセット機能の検証
+   *
+   * reset関数を呼び出した場合、
+   * - React Query の Mutation 状態がリセットされること
+   * - Store の状態が IDLE に戻ること
+   * を確認します。
+   */
+  it('should reset both mutation and store state', async () => {
+    // 1. Set error state first
+    const mockError = new Error('Reset test error');
+    vi.mocked(videoUploader.uploadVideo).mockRejectedValue(mockError);
+
+    const { result } = renderHook(() => useVideoProcessing(), { wrapper: createWrapper() });
+
+    // Trigger error state
+    await act(async () => {
+      try {
+        await result.current.processVideo(new File([''], 'test.mp4', { type: 'video/mp4' }));
+      } catch {
+        // Ignore error
+      }
+    });
+
+    // Verify error state
+    await waitFor(() => {
+      expect(useVideoStore.getState().status).toBe(ProcessingStatus.ERROR);
+      expect(result.current.isError).toBe(true);
+    });
+
+    // 2. Perform reset
+    act(() => {
+      result.current.reset();
+    });
+
+    // 3. Verify idle state
+    await waitFor(() => {
+      // Store check
+      expect(useVideoStore.getState().status).toBe(ProcessingStatus.IDLE);
+      expect(useVideoStore.getState().error).toBeNull();
+
+      // React Query check
+      expect(result.current.isIdle).toBe(true);
+      expect(result.current.error).toBeNull();
+    });
+  });
 });

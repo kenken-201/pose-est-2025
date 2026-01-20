@@ -6,6 +6,7 @@ import { ProgressOverlay } from './ProgressOverlay';
 import { VideoPlayer } from './VideoPlayer';
 import { ErrorDisplay } from './ErrorDisplay';
 import { VIDEO_CONTAINER_SIZE } from '@/lib/constants/ui';
+import { MAX_FILE_SIZE_BYTES } from '@/lib/constants/upload';
 
 /**
  * レイアウト安定化のためのラッパーコンポーネント
@@ -58,6 +59,7 @@ export const ProcessingContainer: FC = () => {
         <UploadDropzone
           onFileSelect={processVideo}
           onFileRejected={handleFileRejected}
+          maxSize={MAX_FILE_SIZE_BYTES}
           accept={{
             'video/mp4': ['.mp4'],
             'video/quicktime': ['.mov'],

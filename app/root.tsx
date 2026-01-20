@@ -67,9 +67,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+import { Toaster } from 'sonner';
+
 export default function App() {
   return (
     <AppProviders>
+      <Toaster richColors position="bottom-right" closeButton theme="light" />
       <Suspense fallback={<LoadingSpinner fullScreen />}>
         <Outlet />
       </Suspense>

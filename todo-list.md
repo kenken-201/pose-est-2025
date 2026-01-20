@@ -489,31 +489,175 @@ Cloudflare のプラットフォーム機能を活用し、アプリケーショ
 
 **Goal**: ユーザーにエラー状態を明確に伝え、適切なアクション（再試行、問い合わせ等）を促すUIを提供する。
 
-#### ⬜ タスク 13-1: エラー発生時に ErrorDisplay が表示されない問題の調査・修正
-
-- [ ] `useVideoProcessing` フックのエラーハンドリング調査
-- [ ] `videoStore` の `status` が `ERROR` に遷移しているか確認
-- [ ] ネットワークエラー時のエラーキャッチ漏れがないか確認
-- [ ] 修正とテスト
-
-#### ⬜ タスク 13-2: エラー表示UIの改善
+#### ✅ タスク 13-1: エラー表示UIの改善
 
 **参考デザイン**: 赤い背景 + 警告アイコン + 明確なメッセージ
 
-- [ ] `ErrorDisplay` コンポーネントのデザイン見直し
-  - [ ] 視認性の高い赤い枠線・背景
-  - [ ] 警告アイコン（⚠️）の強調
-  - [ ] エラーメッセージの日本語化・明確化
-- [ ] エラー種別に応じたメッセージ表示
-  - [ ] ネットワークエラー: 「インターネット接続を確認してください」
-  - [ ] サーバーエラー: 「サーバーが応答していません。しばらくしてから再試行してください」
-  - [ ] ファイル形式エラー: 「対応していないファイル形式です」
-- [ ] 再試行ボタンのデザイン改善
+- [x] `ErrorDisplay` コンポーネントのデザイン見直し
+  - [x] 視認性の高い赤い枠線・背景
+  - [x] 警告アイコン（⚠️）の強調
+  - [x] エラーメッセージの日本語化・明確化
+- [x] エラー種別に応じたメッセージ表示
+  - [x] ネットワークエラー: 「インターネット接続を確認してください」
+  - [x] サーバーエラー: 「サーバーが応答していません。しばらくしてから再試行してください」
+  - [x] ファイル形式エラー: 「対応していないファイル形式です」
+- [x] 再試行ボタンのデザイン改善
 
-#### ⬜ タスク 13-3: トースト通知の実装（オプション）
+#### ✅ タスク 13-2: トースト通知の実装
 
-- [ ] 軽微なエラーや成功通知にトースト（一時的ポップアップ）を使用
-- [ ] ライブラリ選定（react-hot-toast, sonner 等）
-- [ ] 統合とテスト
+**Goal**: 軽微な成功/エラー通知をトーストで表示し、UX を向上させる。
+
+**13-2a: ライブラリ導入**
+
+- [x] `sonner` をインストール (軽量・モダン・アクセシブル)
+- [x] `app/root.tsx` に `<Toaster />` プロバイダーを追加
+- [x] テーマカスタマイズ（ダークモード対応は後回し）
+
+**13-2b: トースト表示ロジック**
+
+- [x] `lib/utils/toast.ts` にラッパー関数を作成
+  - `showSuccess(message: string)` - 成功通知
+  - `showError(message: string)` - エラー通知
+  - `showInfo(message: string)` - 情報通知
+- [x] `useVideoProcessing` フック内で成功時にトースト表示
+  - 「動画の処理が完了しました」
+
+**13-2c: テスト**
+
+- [x] トースト表示のユニットテスト (モック使用)
+- [x] 手動確認: 成功/エラー時にトーストが表示されること
+
+---
+
+#### ✅ タスク 13-3: ファイルサイズ制限の一時的調整
+
+**Goal**: Cloud Run の 32MB 制限を回避するため、フェーズ 14 完了まで暫定的にフロントエンドでサイズ制限を設ける。
+
+**13-3a: 定数定義**
+
+- [x] `lib/constants/upload.ts` を作成
+  - `MAX_FILE_SIZE_BYTES = 30 * 1024 * 1024` (30MB)
+  - `MAX_FILE_SIZE_DISPLAY = '30MB'`
+- [x] テストで使用するためにエクスポート
+
+**13-3b: バリデーション適用**
+
+- [x] `ProcessingContainer.tsx` で `maxSize` プロップを渡す
+  - `<UploadDropzone maxSize={MAX_FILE_SIZE_BYTES} ... />`
+- [x] `UploadDropzone.tsx` 内の表示テキストを動的に変更
+  - 「MP4, MOV, WebMに対応（最大 30MB）」
+  - Props から `maxSizeDisplay` を受け取るか、内部で計算
+
+**13-3c: エラーメッセージの日本語化**
+
+- [x] `getLocalizedErrorMessage('file-too-large')` を更新
+  - 「ファイルサイズが大きすぎます（最大 30MB）」
+
+**13-3d: テスト**
+
+- [x] `UploadDropzone.test.tsx` に 30MB 超過時のテストケース追加
+- [x] 手動確認: 31MB のファイルでエラーが表示されること
+
+#### ✅ タスク 13-4: README.md の改良
+
+**対象読者**: 転職における技術面接官
+
+- [x] プロジェクト概要の見直し（簡潔で技術的な説明）
+- [x] アーキテクチャ図の追加/更新
+- [x] セキュリティへのこだわりポイント記載
+  - 認証トークンの取り扱い
+  - CORS 設定
+  - 環境変数管理
+- [x] パフォーマンスへのこだわりポイント記載
+  - SSR/SSG 戦略
+  - 画像/動画の最適化
+  - API レスポンス時間の考慮
+- [x] テスト戦略の記載
+- [x] 技術選定理由の明記
+
+#### ✅ タスク 13-5: CI/CD 最適化とパッケージ管理
+
+**目的**: CI の効率化と依存関係の最新化・整理
+
+**13-5a: CI ワークフローの最適化**
+
+- [x] `.github/workflows/ci.yml` を修正
+  - develop → main マージ時に CI を実行しない（PR での通過後にマージされるため再実行は不要）
+- [ ] CD (`deploy-workers.yml`) は変更なし
+
+**13-5b: パッケージ更新**
+
+- [x] `npm outdated` で古いパッケージを確認
+- [x] 安全な更新（パッチ/マイナー）を適用
+  - 例: `@cloudflare/vite-plugin`, `@tanstack/react-query`, `prettier` など
+- [x] メジャーバージョン更新は影響を評価して判断
+  - `react-player` 2.x → 3.x (破壊的変更あり)
+  - `tailwindcss` 3.x → 4.x (設定ファイル形式変更)
+  - `zod` 3.x → 4.x (API 変更あり)
+- [x] `npm test` および `npm run build` で動作確認
+
+**13-5c: パッケージ更新スクリプト作成**
+
+- [x] `scripts/update-packages.sh` を作成
+  - `npm outdated` で一覧表示
+  - `npx npm-check-updates -u --target minor` で安全な更新を適用
+  - `npm install` で反映
+  - `npm test && npm run build` で検証
+
+**13-5d: 不要パッケージの削除**
+
+- [x] `package.json` をレビューして未使用パッケージを特定
+  - `winston` (サーバーサイドロギング用だが現在未使用?)
+  - `@types/jest` (Vitest 使用のため不要)
+- [x] `npm uninstall` で削除
+- [x] `npm test && npm run build` で動作確認
+
+---
+
+### 🚀 **フェーズ 14: 署名付き URL アップロード対応 (大容量ファイル対応)**
+
+**Goal**: Cloud Run の 32MB 制限を回避するため、大容量動画ファイル（〜100MB+）を Cloudflare R2 に直接アップロードする機能を実装する。
+
+**背景**: Cloud Run の HTTP/1.1 リクエストボディサイズ制限は 32MB 固定で変更不可。署名付き URL を使用して R2 に直接アップロードし、バックエンドには object_key のみを渡すアーキテクチャに変更する。
+
+**参考ドキュメント**: `pose-est-front/documents/presigned-url-handover.md`
+
+#### ⬜ タスク 14-1: API クライアントの更新
+
+- [ ] **14-1a**: 型定義の追加 (`lib/api/types.ts`)
+  - [ ] `UploadInitiateRequestSchema` 追加
+  - [ ] `UploadInitiateResponseSchema` 追加
+  - [ ] `ProcessByKeyRequestSchema` 追加
+- [ ] **14-1b**: API メソッドの追加 (`lib/api/posture-estimation.ts`)
+  - [ ] `initiateUpload(filename, contentType, fileSize)` 追加
+  - [ ] `processVideoByKey(objectKey)` 追加
+- [ ] **テスト**: 単体テスト追加
+
+#### ⬜ タスク 14-2: アップロードロジックの実装
+
+- [ ] **14-2a**: R2 直接アップロード実装 (`lib/services/client/video-uploader.client.ts`)
+  - [ ] 署名付き URL 取得 → R2 PUT リクエストの実装
+  - [ ] `XMLHttpRequest` または `fetch` での進捗イベント発火
+- [ ] **14-2b**: 既存の `uploadVideo` を 2 段階アップロードに変更
+  1. `initiateUpload()` で署名付き URL 取得
+  2. R2 へ直接 PUT アップロード
+  3. `processVideoByKey(objectKey)` で処理開始
+- [ ] **テスト**: モックを使用した単体テスト
+
+#### ⬜ タスク 14-3: UI の更新
+
+- [ ] **14-3a**: 進捗表示の改善 (`components/video/ProgressOverlay.tsx`)
+  - [ ] 「R2 にアップロード中...」表示追加
+  - [ ] 「処理中...」表示を維持
+  - [ ] 進捗バーをアップロード/処理で分離
+- [ ] **14-3b**: `useVideoProcessing` フックの更新
+  - [ ] 2 段階の状態管理（UPLOADING → PROCESSING）
+
+#### ⬜ タスク 14-4: 結合テスト
+
+- [ ] Dev 環境での小ファイル（1MB）アップロード確認
+- [ ] Dev 環境での大ファイル（80MB+）アップロード確認
+- [ ] エラーハンドリング（署名 URL 取得失敗、R2 アップロード失敗）確認
+- [ ] **🛑 [Review] FE/BE 結合動作確認**
 
 ---

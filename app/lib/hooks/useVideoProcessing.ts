@@ -4,11 +4,13 @@
  * React Query と Zustand を統合し、動画アップロード・処理の
  * 非同期状態管理を提供します。
  */
+import { useCallback } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { videoUploader } from '../services/client/video-uploader.client';
 import { useVideoStore } from '../stores/video.store';
 import { VideoProcessResponse } from '../api/types';
 import { AppAPIError } from '../api/errors';
+import { showSuccess } from '@/lib/utils/toast';
 
 /**
  * 動画処理カスタムフック
@@ -25,7 +27,7 @@ import { AppAPIError } from '../api/errors';
  * ```
  */
 export const useVideoProcessing = () => {
-  // Critical Fix #2: Use store reference instead of destructuring to avoid stale closures
+  // ストアの参照を保持し、クロージャ内での stale 状態を防ぐ
   const store = useVideoStore;
 
   const mutation = useMutation<VideoProcessResponse, Error | AppAPIError, File>({
@@ -35,17 +37,24 @@ export const useVideoProcessing = () => {
         store.getState().setUploading(progress);
       });
     },
-    // Critical Fix #2: Set initial state BEFORE mutation starts
+    // ミューテーション開始前に初期状態を設定
     onMutate: () => {
       store.getState().setUploading(0);
     },
     onSuccess: data => {
       store.getState().setCompleted(data);
+      showSuccess('動画の処理が完了しました！');
     },
     onError: error => {
       store.getState().setError(error);
     },
   });
+
+  // リセット処理：ミューテーション状態とストア状態の両方をクリア
+  const reset = useCallback(() => {
+    mutation.reset();
+    store.getState().reset();
+  }, [mutation, store]);
 
   return {
     processVideo: mutation.mutateAsync,
@@ -53,7 +62,7 @@ export const useVideoProcessing = () => {
     isError: mutation.isError,
     isSuccess: mutation.isSuccess,
     error: mutation.error,
-    reset: mutation.reset,
+    reset,
     isIdle: mutation.isIdle,
   };
 };
