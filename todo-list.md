@@ -505,17 +505,58 @@ Cloudflare のプラットフォーム機能を活用し、アプリケーショ
 
 #### ⬜ タスク 13-2: トースト通知の実装
 
-- [ ] 軽微なエラーや成功通知にトースト（一時的ポップアップ）を使用
-- [ ] ライブラリ選定（react-hot-toast, sonner 等）
-- [ ] 統合とテスト
+**Goal**: 軽微な成功/エラー通知をトーストで表示し、UX を向上させる。
+
+**13-2a: ライブラリ導入**
+
+- [ ] `sonner` をインストール (軽量・モダン・アクセシブル)
+- [ ] `app/root.tsx` に `<Toaster />` プロバイダーを追加
+- [ ] テーマカスタマイズ（ダークモード対応は後回し）
+
+**13-2b: トースト表示ロジック**
+
+- [ ] `lib/utils/toast.ts` にラッパー関数を作成
+  - `showSuccess(message: string)` - 成功通知
+  - `showError(message: string)` - エラー通知
+  - `showInfo(message: string)` - 情報通知
+- [ ] `useVideoProcessing` フック内で成功時にトースト表示
+  - 「動画の処理が完了しました」
+
+**13-2c: テスト**
+
+- [ ] トースト表示のユニットテスト (モック使用)
+- [ ] 手動確認: 成功/エラー時にトーストが表示されること
+
+---
 
 #### ⬜ タスク 13-3: ファイルサイズ制限の一時的調整
 
-**背景**: Cloud Run の 32MB 制限回避のため、フェーズ 14 完了まで暫定対応
+**Goal**: Cloud Run の 32MB 制限を回避するため、フェーズ 14 完了まで暫定的にフロントエンドでサイズ制限を設ける。
 
-- [ ] `UploadDropzone.tsx` の表示を「最大 500MB」→「最大 30MB」に変更
-- [ ] バリデーションチェックで 30MB 以上のファイルをエラーにする
-- [ ] エラーメッセージ: 「ファイルサイズが大きすぎます（最大 30MB）」
+**13-3a: 定数定義**
+
+- [ ] `lib/constants/upload.ts` を作成
+  - `MAX_FILE_SIZE_BYTES = 30 * 1024 * 1024` (30MB)
+  - `MAX_FILE_SIZE_DISPLAY = '30MB'`
+- [ ] テストで使用するためにエクスポート
+
+**13-3b: バリデーション適用**
+
+- [ ] `ProcessingContainer.tsx` で `maxSize` プロップを渡す
+  - `<UploadDropzone maxSize={MAX_FILE_SIZE_BYTES} ... />`
+- [ ] `UploadDropzone.tsx` 内の表示テキストを動的に変更
+  - 「MP4, MOV, WebMに対応（最大 30MB）」
+  - Props から `maxSizeDisplay` を受け取るか、内部で計算
+
+**13-3c: エラーメッセージの日本語化**
+
+- [ ] `getLocalizedErrorMessage('file-too-large')` を更新
+  - 「ファイルサイズが大きすぎます（最大 30MB）」
+
+**13-3d: テスト**
+
+- [ ] `UploadDropzone.test.tsx` に 30MB 超過時のテストケース追加
+- [ ] 手動確認: 31MB のファイルでエラーが表示されること
 
 #### ⬜ タスク 13-4: README.md の改良
 
