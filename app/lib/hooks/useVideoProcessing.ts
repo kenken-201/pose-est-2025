@@ -27,7 +27,7 @@ import { showSuccess } from '@/lib/utils/toast';
  * ```
  */
 export const useVideoProcessing = () => {
-  // Critical Fix #2: Use store reference instead of destructuring to avoid stale closures
+  // ストアの参照を保持し、クロージャ内での stale 状態を防ぐ
   const store = useVideoStore;
 
   const mutation = useMutation<VideoProcessResponse, Error | AppAPIError, File>({
@@ -37,7 +37,7 @@ export const useVideoProcessing = () => {
         store.getState().setUploading(progress);
       });
     },
-    // Critical Fix #2: Set initial state BEFORE mutation starts
+    // ミューテーション開始前に初期状態を設定
     onMutate: () => {
       store.getState().setUploading(0);
     },
@@ -50,7 +50,7 @@ export const useVideoProcessing = () => {
     },
   });
 
-  // Combined reset: clears both mutation state and store state
+  // リセット処理：ミューテーション状態とストア状態の両方をクリア
   const reset = useCallback(() => {
     mutation.reset();
     store.getState().reset();

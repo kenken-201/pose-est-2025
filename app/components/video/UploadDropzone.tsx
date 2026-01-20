@@ -60,9 +60,6 @@ export const UploadDropzone: FC<UploadDropzoneProps> = ({
   const inputId = 'upload-dropzone-file-input';
 
   const handleManualFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // eslint-disable-next-line no-console
-    console.log('[UploadDropzone] handleManualFileSelect called', e.target.files);
-
     const files = e.target.files;
     if (!files || files.length === 0) {
       return;
@@ -133,9 +130,6 @@ export const UploadDropzone: FC<UploadDropzoneProps> = ({
         .join(',')
     : undefined;
 
-  // eslint-disable-next-line no-console
-  console.log('[UploadDropzone] Rendered/Mounted');
-
   return (
     <div className="w-full max-w-xl mx-auto">
       <div
@@ -160,6 +154,7 @@ export const UploadDropzone: FC<UploadDropzoneProps> = ({
           accept={acceptString}
           disabled={disabled}
           data-testid="dropzone-input"
+          aria-invalid={!!localError}
         />
 
         <div className="flex flex-col items-center text-center space-y-4">
@@ -216,6 +211,14 @@ export const UploadDropzone: FC<UploadDropzoneProps> = ({
           <label
             htmlFor={disabled ? undefined : inputId}
             onClick={handleLabelClick}
+            onKeyDown={e => {
+              if (!disabled && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault();
+                // inputをクリックしてファイル選択ダイアログを開く
+                const input = document.getElementById(inputId);
+                input?.click();
+              }
+            }}
             className={`
               px-6 py-2.5 rounded-lg text-sm font-medium text-white shadow-sm transition-all
               inline-block select-none
