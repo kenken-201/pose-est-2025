@@ -4,6 +4,7 @@
  * React Query と Zustand を統合し、動画アップロード・処理の
  * 非同期状態管理を提供します。
  */
+import { useCallback } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { videoUploader } from '../services/client/video-uploader.client';
 import { useVideoStore } from '../stores/video.store';
@@ -49,13 +50,19 @@ export const useVideoProcessing = () => {
     },
   });
 
+  // Combined reset: clears both mutation state and store state
+  const reset = useCallback(() => {
+    mutation.reset();
+    store.getState().reset();
+  }, [mutation, store]);
+
   return {
     processVideo: mutation.mutateAsync,
     isLoading: mutation.isPending,
     isError: mutation.isError,
     isSuccess: mutation.isSuccess,
     error: mutation.error,
-    reset: mutation.reset,
+    reset,
     isIdle: mutation.isIdle,
   };
 };
