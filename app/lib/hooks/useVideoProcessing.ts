@@ -9,6 +9,7 @@ import { videoUploader } from '../services/client/video-uploader.client';
 import { useVideoStore } from '../stores/video.store';
 import { VideoProcessResponse } from '../api/types';
 import { AppAPIError } from '../api/errors';
+import { showSuccess } from '@/lib/utils/toast';
 
 /**
  * 動画処理カスタムフック
@@ -41,6 +42,7 @@ export const useVideoProcessing = () => {
     },
     onSuccess: data => {
       store.getState().setCompleted(data);
+      showSuccess('動画の処理が完了しました！');
     },
     onError: error => {
       store.getState().setError(error);
