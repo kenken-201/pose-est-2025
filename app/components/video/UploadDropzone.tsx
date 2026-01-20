@@ -1,5 +1,7 @@
 import { useState, type FC } from 'react';
 
+import { MAX_FILE_SIZE_DISPLAY } from '@/lib/constants/upload';
+
 /**
  * ファイル拒否エラーの型定義
  */
@@ -14,7 +16,7 @@ export interface FileError {
 const getLocalizedErrorMessage = (code: string): string => {
   switch (code) {
     case 'file-too-large':
-      return 'ファイルサイズが大きすぎます';
+      return `ファイルサイズが大きすぎます（最大 ${MAX_FILE_SIZE_DISPLAY}）`;
     case 'file-invalid-type':
       return '対応していないファイル形式です';
     case 'too-many-files':
@@ -201,7 +203,7 @@ export const UploadDropzone: FC<UploadDropzoneProps> = ({
                   {localError}
                 </span>
               ) : (
-                'MP4, MOV, WebMに対応（最大 500MB）'
+                `MP4, MOV, WebMに対応（最大 ${MAX_FILE_SIZE_DISPLAY}）`
               )}
             </p>
           </div>

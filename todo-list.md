@@ -535,28 +535,28 @@ Cloudflare のプラットフォーム機能を活用し、アプリケーショ
 
 **13-3a: 定数定義**
 
-- [ ] `lib/constants/upload.ts` を作成
+- [x] `lib/constants/upload.ts` を作成
   - `MAX_FILE_SIZE_BYTES = 30 * 1024 * 1024` (30MB)
   - `MAX_FILE_SIZE_DISPLAY = '30MB'`
-- [ ] テストで使用するためにエクスポート
+- [x] テストで使用するためにエクスポート
 
 **13-3b: バリデーション適用**
 
-- [ ] `ProcessingContainer.tsx` で `maxSize` プロップを渡す
+- [x] `ProcessingContainer.tsx` で `maxSize` プロップを渡す
   - `<UploadDropzone maxSize={MAX_FILE_SIZE_BYTES} ... />`
-- [ ] `UploadDropzone.tsx` 内の表示テキストを動的に変更
+- [x] `UploadDropzone.tsx` 内の表示テキストを動的に変更
   - 「MP4, MOV, WebMに対応（最大 30MB）」
   - Props から `maxSizeDisplay` を受け取るか、内部で計算
 
 **13-3c: エラーメッセージの日本語化**
 
-- [ ] `getLocalizedErrorMessage('file-too-large')` を更新
+- [x] `getLocalizedErrorMessage('file-too-large')` を更新
   - 「ファイルサイズが大きすぎます（最大 30MB）」
 
 **13-3d: テスト**
 
-- [ ] `UploadDropzone.test.tsx` に 30MB 超過時のテストケース追加
-- [ ] 手動確認: 31MB のファイルでエラーが表示されること
+- [x] `UploadDropzone.test.tsx` に 30MB 超過時のテストケース追加
+- [x] 手動確認: 31MB のファイルでエラーが表示されること
 
 #### ⬜ タスク 13-4: README.md の改良
 
