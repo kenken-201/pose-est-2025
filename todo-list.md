@@ -575,14 +575,42 @@ Cloudflare のプラットフォーム機能を活用し、アプリケーショ
 - [x] テスト戦略の記載
 - [x] 技術選定理由の明記
 
-#### ⬜ タスク 13-5: CI ワークフローの最適化
+#### ✅ タスク 13-5: CI/CD 最適化とパッケージ管理
 
-**目的**: main マージ時の冗長な CI 実行を回避
+**目的**: CI の効率化と依存関係の最新化・整理
 
-- [ ] `.github/workflows/ci.yml` を修正
-  - develop → main マージ時に CI を実行しない
-  - PR 上での CI 通過後にマージされるため、再実行は不要
+**13-5a: CI ワークフローの最適化**
+
+- [x] `.github/workflows/ci.yml` を修正
+  - develop → main マージ時に CI を実行しない（PR での通過後にマージされるため再実行は不要）
 - [ ] CD (`deploy-workers.yml`) は変更なし
+
+**13-5b: パッケージ更新**
+
+- [x] `npm outdated` で古いパッケージを確認
+- [x] 安全な更新（パッチ/マイナー）を適用
+  - 例: `@cloudflare/vite-plugin`, `@tanstack/react-query`, `prettier` など
+- [x] メジャーバージョン更新は影響を評価して判断
+  - `react-player` 2.x → 3.x (破壊的変更あり)
+  - `tailwindcss` 3.x → 4.x (設定ファイル形式変更)
+  - `zod` 3.x → 4.x (API 変更あり)
+- [x] `npm test` および `npm run build` で動作確認
+
+**13-5c: パッケージ更新スクリプト作成**
+
+- [x] `scripts/update-packages.sh` を作成
+  - `npm outdated` で一覧表示
+  - `npx npm-check-updates -u --target minor` で安全な更新を適用
+  - `npm install` で反映
+  - `npm test && npm run build` で検証
+
+**13-5d: 不要パッケージの削除**
+
+- [x] `package.json` をレビューして未使用パッケージを特定
+  - `winston` (サーバーサイドロギング用だが現在未使用?)
+  - `@types/jest` (Vitest 使用のため不要)
+- [x] `npm uninstall` で削除
+- [x] `npm test && npm run build` で動作確認
 
 ---
 
