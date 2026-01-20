@@ -42,6 +42,7 @@ export type ClientErrorCode =
   | 'NETWORK_ERROR'
   | 'TIMEOUT_ERROR'
   | 'CLIENT_ERROR'
+  | 'SERVER_ERROR' // generic 5xx error
   | 'VALIDATION_ERROR'
   | 'UNKNOWN_ERROR';
 
@@ -53,8 +54,7 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   // Backend errors
   VIDEO_TOO_SHORT: '動画が短すぎます。3秒以上の動画をアップロードしてください。',
   VIDEO_TOO_LONG: '動画が長すぎます。7分以内の動画をアップロードしてください。',
-  INVALID_VIDEO_FORMAT:
-    '動画ファイルを読み込めませんでした。対応形式（MP4, MOV, WebM）をご確認ください。',
+  INVALID_VIDEO_FORMAT: '対応していないファイル形式です。',
   FILE_TOO_LARGE: 'ファイルサイズが大きすぎます。100MB以下の動画をアップロードしてください。',
   INVALID_PARAMETER: 'パラメータが不正です。設定を確認してください。',
   MODEL_INFERENCE_ERROR:
@@ -62,9 +62,10 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   STORAGE_SERVICE_UNAVAILABLE:
     'サービスが一時的に利用できません。しばらく時間をおいて再度お試しください。',
   // Client errors
-  NETWORK_ERROR: 'ネットワーク接続を確認してください。',
+  NETWORK_ERROR: 'インターネット接続を確認してください。',
   TIMEOUT_ERROR: 'リクエストがタイムアウトしました。しばらく時間をおいて再度お試しください。',
   CLIENT_ERROR: 'リクエストの送信に失敗しました。ページを再読み込みしてお試しください。',
+  SERVER_ERROR: 'サーバーが応答していません。しばらくしてから再試行してください。',
   VALIDATION_ERROR: '入力内容に問題があります。ファイルを確認してください。',
   UNKNOWN_ERROR: '予期しないエラーが発生しました。',
 };
@@ -107,6 +108,11 @@ export const createErrorFromAxiosError = (error: AxiosError): AppAPIError => {
         status,
         parseResult.data.error.details
       );
+    }
+
+    // 5xx 系エラーで、かつ構造化されていない場合は SERVER_ERROR とする
+    if (status >= 500) {
+      return new AppAPIError('Server error', 'SERVER_ERROR', status, data);
     }
 
     // 定義されていない形式のエラーレスポンス

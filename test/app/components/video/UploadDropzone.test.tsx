@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UploadDropzone } from '@/components/video/UploadDropzone';
+import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_DISPLAY } from '@/lib/constants/upload';
 
 /**
  * UploadDropzone コンポーネントのテスト
@@ -81,13 +82,15 @@ describe('UploadDropzone', () => {
       <UploadDropzone
         onFileSelect={onFileSelect}
         onFileRejected={onFileRejected}
-        maxSize={100} // 100バイト制限
+        maxSize={MAX_FILE_SIZE_BYTES}
         accept={{ 'video/mp4': ['.mp4'] }}
       />
     );
 
-    // 制限を超えるファイルを作成
-    const largeFile = new File(['x'.repeat(200)], 'large.mp4', { type: 'video/mp4' });
+    // 制限を超えるファイルを作成 (30MB + 1byte)
+    const largeFile = new File([new ArrayBuffer(MAX_FILE_SIZE_BYTES + 1)], 'large.mp4', {
+      type: 'video/mp4',
+    });
     const input = screen.getByTestId('dropzone-input');
 
     await userEvent.upload(input, largeFile);
@@ -104,7 +107,7 @@ describe('UploadDropzone', () => {
     await waitFor(() => {
       expect(screen.getByRole('alert')).toBeInTheDocument();
       expect(screen.getByTestId('dropzone-error')).toHaveTextContent(
-        /ファイルサイズが大きすぎます/
+        `ファイルサイズが大きすぎます（最大 ${MAX_FILE_SIZE_DISPLAY}）`
       );
     });
   });

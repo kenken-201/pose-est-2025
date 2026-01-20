@@ -5,6 +5,134 @@
 ![Project Status](https://img.shields.io/badge/status-active-success.svg)
 ![Coverage](https://img.shields.io/badge/coverage-94%25-brightgreen.svg)
 
+---
+
+## 📐 アーキテクチャ概要
+
+> **Note**: 以下の図は GitHub 上で正しくレンダリングされます。VS Code では [Markdown Preview Mermaid Support](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid) 拡張機能が必要です。
+
+```mermaid
+graph LR
+    subgraph Client
+        A[ブラウザ]
+    end
+    subgraph Cloudflare
+        B[Cloudflare Workers<br/>React Router SSR]
+        C[Cloudflare R2<br/>動画ストレージ]
+    end
+    subgraph GCP
+        D[Cloud Run<br/>FastAPI Backend]
+        E[姿勢推定 AI<br/>MediaPipe]
+    end
+
+    A -->|HTTPS| B
+    B -->|API Call| D
+    D -->|推定処理| E
+    D -->|署名付きURL| C
+    C -->|動画配信| A
+```
+
+### システムフロー
+
+1. **SSR (Server-Side Rendering)**: Cloudflare Workers 上で React Router v7 が動作し、初期 HTML をサーバーサイドでレンダリング
+2. **状態管理**: クライアント状態 (Zustand) とサーバー状態 (TanStack Query) を明確に分離
+3. **動画処理**: アップロード → Cloud Run で姿勢推定 → R2 に結果保存 → 署名付き URL で配信
+
+---
+
+## 🛠 技術選定と理由
+
+| カテゴリ             | 技術               | 選定理由                                                                    |
+| -------------------- | ------------------ | --------------------------------------------------------------------------- |
+| **フレームワーク**   | React Router v7    | SSR 対応、Cloudflare Workers ネイティブサポート、ファイルベースルーティング |
+| **サーバー状態**     | TanStack Query     | キャッシュ戦略、再取得ロジック、ローディング/エラー状態の自動管理           |
+| **クライアント状態** | Zustand            | 軽量 (2KB)、ボイラープレート削減、React 外からもアクセス可能                |
+| **スタイリング**     | TailwindCSS        | ユーティリティファースト、デザインシステムとの相性、ビルド時の最適化        |
+| **ホスティング**     | Cloudflare Workers | エッジ実行による低レイテンシ、グローバル CDN、コスト効率                    |
+| **テスト**           | Vitest + RTL       | Vite との統合、高速な HMR、Jest 互換 API                                    |
+
+---
+
+## 🔒 セキュリティへのこだわり
+
+### 環境変数管理
+
+- 機密情報は **Cloudflare Secrets** で管理（Dashboard 経由で設定）
+- クライアントバンドルには `VITE_` プレフィックス付きの公開可能な値のみ含める
+- サーバーサイド専用の変数は `wrangler.jsonc` の `vars` で定義
+
+### CORS 設計
+
+- バックエンド API は許可されたオリジンのみ受け入れ（`https://kenken-pose-est.online` 等）
+- プリフライトリクエストに対応し、クレデンシャル付きリクエストをサポート
+
+### クライアントバンドルの安全性
+
+- API キーやシークレットはクライアントコードに含めない
+- 署名付き URL を使用し、R2 への直接アクセスを時間制限付きで許可（Phase 14 で実装予定）
+
+---
+
+## ⚡ パフォーマンス最適化
+
+### レンダリング戦略
+
+- **SSR (Server-Side Rendering)**: 初回ロード時に完全な HTML を返し、FCP (First Contentful Paint) を高速化
+- **ハイドレーション**: SSR 後にクライアントサイドで React がアタッチされ、インタラクティブに
+
+### コード分割
+
+- React Router のルートベース分割により、必要なページのコードのみをロード
+- 動的インポートで大きなライブラリ (react-player 等) を遅延ロード
+
+### エッジデプロイ
+
+- Cloudflare Workers は世界 300+ のエッジロケーションで実行
+- 日本ユーザーには日本のエッジノードから配信、レイテンシを最小化
+
+### バンドルサイズ
+
+- TailwindCSS の PurgeCSS により未使用スタイルを削除
+- Tree Shaking で不要な JavaScript を除去
+
+---
+
+## ✅ テスト戦略
+
+### テストピラミッド
+
+```
+        /\
+       /  \  E2E (将来)
+      /----\
+     /      \  Integration (RTL)
+    /--------\
+   /          \  Unit (Vitest)
+  /______________\
+```
+
+### 現在のカバレッジ
+
+- **目標**: 90% 以上
+- **実績**: 94% (2026-01 時点)
+
+### テストツール
+
+| ツール                    | 用途                                |
+| ------------------------- | ----------------------------------- |
+| **Vitest**                | 単体テスト (hooks, utils, stores)   |
+| **React Testing Library** | コンポーネントテスト (ユーザー視点) |
+| **happy-dom**             | 軽量な DOM 実装 (jsdom より高速)    |
+
+### 品質チェックワークフロー
+
+```bash
+./scripts/quality-check.sh        # TypeCheck, Lint, Test, Build 一括実行
+./scripts/quality-check.sh --fix  # Lint 自動修正付き
+```
+
+---
+
 ## 🚀 Tech Stack
 
 ### Frontend
@@ -15,16 +143,20 @@
   - Client State: [Zustand](https://docs.pmnd.rs/zustand/getting-started/introduction)
 - **Styling:** [TailwindCSS](https://tailwindcss.com/)
 - **Components:** [Lucide React](https://lucide.dev/) (Icons)
+- **Notifications:** [Sonner](https://sonner.emilkowal.ski/) (Toast)
 
 ### Testing
 
 - **Unit Testing:** [Vitest](https://vitest.dev/)
 - **Integration Testing:** [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
 
-### Infrastructure (Planned)
+### Infrastructure
 
-- **Hosting:** Cloudflare Pages (Functions)
-- **Backend:** (Future Implementation)
+- **Hosting:** Cloudflare Workers (Pages Functions)
+- **Storage:** Cloudflare R2
+- **Backend:** Cloud Run (FastAPI) ※別リポジトリ
+
+---
 
 ## 🛠 Getting Started
 
@@ -49,7 +181,9 @@
 npm run dev
 ```
 
-アプリケーションは `http://localhost:3000` で起動します。
+アプリケーションは `http://localhost:5173` で起動します。
+
+---
 
 ## 🔧 Environment Variables
 
@@ -60,38 +194,16 @@ npm run dev
 | `VITE_API_BASE_URL`    | バックエンド API のベース URL                | `http://localhost:8000` |
 | `VITE_API_TIMEOUT`     | API リクエストタイムアウト (ms)              | `30000`                 |
 | `VITE_MAX_VIDEO_SIZE`  | アップロード可能な最大ファイルサイズ (Bytes) | `104857600` (100MB)     |
-| `VITE_ENABLE_MOCK_API` | モック API を有効にする                      | `false`                 |
+| `VITE_CF_BEACON_TOKEN` | Cloudflare Web Analytics トークン            | -                       |
 
-### Cloudflare Pages での設定
-
-デプロイ先の Cloudflare Pages でも同等の環境変数を設定する必要があります。
+### Cloudflare での設定
 
 1. **Cloudflare Dashboard** にアクセス
 2. **Workers & Pages** -> 対象のプロジェクトを選択
 3. **Settings** -> **Environment variables** を開く
-4. **Production** と **Preview** 環境それぞれに上記変数を追加
-   - `VITE_API_BASE_URL` は環境に応じて変更してください
-     - Production: `https://kenken-pose-est.online`
-     - Preview / Dev: `https://dev.kenken-pose-est.online`
+4. **Production** と **Preview** 環境それぞれに変数を追加
 
-## ✅ Testing & Quality Checks
-
-### 一括品質チェック（推奨）
-
-以下のスクリプトで、TypeCheck, Lint, Test, Buildを一括実行できます:
-
-```bash
-./scripts/quality-check.sh        # 全チェック実行
-./scripts/quality-check.sh --fix  # Lint自動修正付き
-```
-
-### 個別実行
-
-- `npm run typecheck` : TypeScript型チェック
-- `npm run lint:fix` : コードスタイルの修正
-- `npm run test` : テスト実行
-- `npm run test:coverage` : カバレッジレポート生成
-- `npm run build` : プロダクションビルド
+---
 
 ## 📁 Project Structure
 
@@ -102,32 +214,32 @@ app/
 │   ├── ui/             # LoadingSpinner など汎用パーツ
 │   └── video/          # ProcessingContainer, UploadDropzone など機能パーツ
 ├── lib/
-│   ├── api/            # APIクライアント設定
+│   ├── api/            # APIクライアント設定、エラーハンドリング
+│   ├── constants/      # 定数定義 (ファイルサイズ制限等)
 │   ├── hooks/          # カスタムフック (useVideoProcessing)
 │   ├── providers/      # AppProviders (React Query)
 │   ├── services/       # ビジネスロジック
 │   ├── stores/         # Zustand ストア
-│   └── utils/          # 汎用ユーティリティ
+│   └── utils/          # 汎用ユーティリティ (toast 等)
 ├── routes/             # React Router ルーティング定義
 │   └── _index.tsx      # トップページ
 ├── root.tsx            # アプリケーションルート
 └── entry.client.tsx    # クライアントサイドエントリー
 ```
 
-## デモ
-
-ページ表示時は以下のような想定です。（現在はlocalhostでしか動かない）
-<img width="1071" height="691" alt="スクリーンショット 2025-12-27 20 19 41" src="https://github.com/user-attachments/assets/cc8b76f6-81be-4e1f-8326-b60a85700e30" />
+---
 
 ## 🚢 Deployment
 
-本プロジェクトは **Cloudflare Pages** へのデプロイを想定しています。
+本プロジェクトは **Cloudflare Workers** へのデプロイを想定しています。
 SSRモードが有効になっているため、`@react-router/cloudflare` アダプターを使用します。
 
 ```bash
 npm run build
-npm run start # (Production Preview)
+npm run deploy  # Cloudflare にデプロイ
 ```
+
+---
 
 ## © License
 
