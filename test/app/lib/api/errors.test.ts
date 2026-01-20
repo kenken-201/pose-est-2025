@@ -114,9 +114,10 @@ describe('API Error Handling', () => {
 
       const appError = createErrorFromAxiosError(axiosError);
 
-      expect(appError.code).toBe('UNKNOWN_ERROR');
+      // 5xxエラーは SERVER_ERROR として扱われるようになったため修正
+      expect(appError.code).toBe('SERVER_ERROR');
       expect(appError.status).toBe(500);
-      expect(appError.message).toBe('Unknown Error');
+      expect(appError.message).toBe('Server error');
     });
   });
 
@@ -135,7 +136,7 @@ describe('API Error Handling', () => {
 
     it('should return correct Japanese message for client error codes', () => {
       expect(getUserFriendlyMessage('NETWORK_ERROR')).toContain(
-        'ネットワーク接続を確認してください'
+        'インターネット接続を確認してください'
       );
       expect(getUserFriendlyMessage('TIMEOUT_ERROR')).toContain('リクエストがタイムアウトしました');
       expect(getUserFriendlyMessage('VALIDATION_ERROR')).toContain('入力内容に問題があります');

@@ -112,12 +112,7 @@ export const createErrorFromAxiosError = (error: AxiosError): AppAPIError => {
 
     // 5xx 系エラーで、かつ構造化されていない場合は SERVER_ERROR とする
     if (status >= 500) {
-      return new AppAPIError(
-        'Server error',
-        'SERVER_ERROR',
-        status,
-        data
-      );
+      return new AppAPIError('Server error', 'SERVER_ERROR', status, data);
     }
 
     // 定義されていない形式のエラーレスポンス
