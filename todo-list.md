@@ -638,7 +638,9 @@ Cloudflare のプラットフォーム機能を活用し、アプリケーショ
   - `npm ci` → `bun install --frozen-lockfile`
   - `npm run xxx` → `bun run xxx`
 - [x] `.github/workflows/deploy-workers.yml` を同様に更新
-- [ ] PR で CI 実行時間を比較（Before/After）（マージ後に確認）
+- [x] PR で CI 実行時間を比較（Before/After）（マージ後に確認）
+  - **CIは30%ほど削減(1m36s → 1m09s)**
+  - **CDは**
 
 **13-6c: ドキュメント・スクリプト更新**
 
