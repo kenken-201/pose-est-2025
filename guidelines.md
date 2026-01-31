@@ -21,7 +21,7 @@
 - **通信 (BFF→Backend)**: `axios`
 - **状態管理 (Client)**: `@tanstack/react-query` + `zustand` (必要に応じて)
 - **スタイリング**: `Tailwind CSS` (推奨)
-- **その他推奨ライブラリ**: `react-dropzone`, `react-player` または `<video>`, `winston`/`pino`, `zod`
+- **その他推奨ライブラリ**: `react-dropzone`, `react-player` または `<video>`, `sonner` (トースト通知), `zod`
 
 ### **2. アーキテクチャ原則**
 

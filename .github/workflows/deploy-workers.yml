@@ -3,41 +3,66 @@ name: Deploy Workers
 on:
   push:
     branches: [main, develop]
-    paths:
-      - '**'
-      - '.github/workflows/deploy-workers.yml'
-  pull_request:
-    branches: [main, develop]
-    paths:
-      - '**'
-      - '.github/workflows/deploy-workers.yml'
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+      - '.prettierignore'
+      - 'LICENSE'
+
+# 同一ブランチで新しいプッシュがあった場合、古いワークフローをキャンセル
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# 最小権限の原則
+permissions:
+  contents: read
+  deployments: write
+
+env:
+  NODE_VERSION: '20'
 
 jobs:
   deploy:
+    name: 🚀 Deploy to Cloudflare
     runs-on: ubuntu-latest
-    name: Deploy
-    steps:
-      - uses: actions/checkout@v4
+    timeout-minutes: 10
 
-      - name: Setup Node
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
+      url: ${{ github.ref == 'refs/heads/main' && 'https://kenken-pose-est.online' || 'https://dev.kenken-pose-est.online' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: package-lock.json
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm ci
 
-      # develop / PR: Build with Dev API URL
+      # Preview (develop ブランチ)
       - name: Build (Preview)
-        if: github.ref != 'refs/heads/main'
+        if: github.ref == 'refs/heads/develop'
         run: npm run build
         env:
           VITE_CF_BEACON_TOKEN: ${{ secrets.VITE_CF_BEACON_TOKEN }}
           VITE_API_BASE_URL: https://api-dev.kenken-pose-est.online
 
-      # main: Build with Prod API URL
+      - name: Deploy (Preview)
+        if: github.ref == 'refs/heads/develop'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      # Production (main ブランチ)
       - name: Build (Production)
         if: github.ref == 'refs/heads/main'
         run: npm run build
@@ -45,16 +70,6 @@ jobs:
           VITE_CF_BEACON_TOKEN: ${{ secrets.VITE_CF_BEACON_TOKEN }}
           VITE_API_BASE_URL: https://api.kenken-pose-est.online
 
-      # develop / PR: Deploy to Preview
-      - name: Deploy (Preview)
-        if: github.ref != 'refs/heads/main'
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy
-
-      # main: Deploy to Production
       - name: Deploy (Production)
         if: github.ref == 'refs/heads/main'
         uses: cloudflare/wrangler-action@v3
@@ -62,3 +77,16 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --env production
+
+      # デプロイ成功通知
+      - name: Deployment Summary
+        run: |
+          echo "### 🎉 Deployment Successful!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            echo "**Environment**: Production" >> $GITHUB_STEP_SUMMARY
+            echo "**URL**: https://kenken-pose-est.online" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Environment**: Preview" >> $GITHUB_STEP_SUMMARY
+            echo "**URL**: https://dev.kenken-pose-est.online" >> $GITHUB_STEP_SUMMARY
+          fi
