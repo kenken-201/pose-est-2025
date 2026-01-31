@@ -7,30 +7,11 @@
 
 ---
 
-## 📐 アーキテクチャ概要
+## アーキテクチャ概要
 
-> **Note**: 以下の図は GitHub 上で正しくレンダリングされます。VS Code では [Markdown Preview Mermaid Support](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid) 拡張機能が必要です。
+![Architecture](./documents/architecture.png)
 
-```mermaid
-graph LR
-    subgraph Client
-        A[ブラウザ]
-    end
-    subgraph Cloudflare
-        B[Cloudflare Workers<br/>React Router SSR]
-        C[Cloudflare R2<br/>動画ストレージ]
-    end
-    subgraph GCP
-        D[Cloud Run<br/>FastAPI Backend]
-        E[姿勢推定 AI<br/>MediaPipe]
-    end
-
-    A -->|HTTPS| B
-    B -->|API Call| D
-    D -->|推定処理| E
-    D -->|署名付きURL| C
-    C -->|動画配信| A
-```
+> **詳細なインフラ構成**: [pose-est-infra-2025 (GitHub)](https://github.com/kenken-201/pose-est-infra-2025) の README を参照してください。
 
 ### システムフロー
 
@@ -40,7 +21,7 @@ graph LR
 
 ---
 
-## 🛠 技術選定と理由
+## 技術スタック
 
 | カテゴリ             | 技術               | 選定理由                                                                    |
 | -------------------- | ------------------ | --------------------------------------------------------------------------- |
@@ -53,70 +34,68 @@ graph LR
 
 ---
 
-## 🔒 セキュリティへのこだわり
+## セキュリティへのこだわり
 
-### 環境変数管理
+<details>
+<summary><strong>環境変数管理</strong></summary>
 
 - 機密情報は **Cloudflare Secrets** で管理（Dashboard 経由で設定）
 - クライアントバンドルには `VITE_` プレフィックス付きの公開可能な値のみ含める
 - サーバーサイド専用の変数は `wrangler.jsonc` の `vars` で定義
 
-### CORS 設計
+</details>
+
+<details>
+<summary><strong>CORS 設計</strong></summary>
 
 - バックエンド API は許可されたオリジンのみ受け入れ（`https://kenken-pose-est.online` 等）
 - プリフライトリクエストに対応し、クレデンシャル付きリクエストをサポート
 
-### クライアントバンドルの安全性
+</details>
+
+<details>
+<summary><strong>クライアントバンドルの安全性</strong></summary>
 
 - API キーやシークレットはクライアントコードに含めない
 - 署名付き URL を使用し、R2 への直接アクセスを時間制限付きで許可（Phase 14 で実装予定）
 
+</details>
+
 ---
 
-## ⚡ パフォーマンス最適化
+## パフォーマンス最適化
 
-### レンダリング戦略
+<details>
+<summary><strong>レンダリング戦略</strong></summary>
 
 - **SSR (Server-Side Rendering)**: 初回ロード時に完全な HTML を返し、FCP (First Contentful Paint) を高速化
 - **ハイドレーション**: SSR 後にクライアントサイドで React がアタッチされ、インタラクティブに
 
-### コード分割
+</details>
+
+<details>
+<summary><strong>コード分割とバンドル最適化</strong></summary>
 
 - React Router のルートベース分割により、必要なページのコードのみをロード
 - 動的インポートで大きなライブラリ (react-player 等) を遅延ロード
+- TailwindCSS の PurgeCSS により未使用スタイルを削除
+- Tree Shaking で不要な JavaScript を除去
 
-### エッジデプロイ
+</details>
+
+<details>
+<summary><strong>エッジデプロイ</strong></summary>
 
 - Cloudflare Workers は世界 300+ のエッジロケーションで実行
 - 日本ユーザーには日本のエッジノードから配信、レイテンシを最小化
 
-### バンドルサイズ
-
-- TailwindCSS の PurgeCSS により未使用スタイルを削除
-- Tree Shaking で不要な JavaScript を除去
+</details>
 
 ---
 
 ## ✅ テスト戦略
 
-### テストピラミッド
-
-```
-        /\
-       /  \  E2E (将来)
-      /----\
-     /      \  Integration (RTL)
-    /--------\
-   /          \  Unit (Vitest)
-  /______________\
-```
-
-### 現在のカバレッジ
-
-- **目標**: 90% 以上
-- **実績**: 94% (2026-01 時点)
-
-### テストツール
+**カバレッジ**: 94% (目標 90% 以上)
 
 | ツール                    | 用途                                |
 | ------------------------- | ----------------------------------- |
@@ -124,41 +103,19 @@ graph LR
 | **React Testing Library** | コンポーネントテスト (ユーザー視点) |
 | **happy-dom**             | 軽量な DOM 実装 (jsdom より高速)    |
 
-### 品質チェックワークフロー
+<details>
+<summary><strong>品質チェックワークフロー</strong></summary>
 
 ```bash
 ./scripts/quality-check.sh        # TypeCheck, Lint, Test, Build 一括実行
 ./scripts/quality-check.sh --fix  # Lint 自動修正付き
 ```
 
----
-
-## 🚀 Tech Stack
-
-### Frontend
-
-- **Framework:** [React Router v7](https://reactrouter.com/) (SSR Enabled)
-- **State Management:**
-  - Server State: [TanStack Query (React Query)](https://tanstack.com/query/latest)
-  - Client State: [Zustand](https://docs.pmnd.rs/zustand/getting-started/introduction)
-- **Styling:** [TailwindCSS](https://tailwindcss.com/)
-- **Components:** [Lucide React](https://lucide.dev/) (Icons)
-- **Notifications:** [Sonner](https://sonner.emilkowal.ski/) (Toast)
-
-### Testing
-
-- **Unit Testing:** [Vitest](https://vitest.dev/)
-- **Integration Testing:** [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
-
-### Infrastructure
-
-- **Hosting:** Cloudflare Workers (Pages Functions)
-- **Storage:** Cloudflare R2
-- **Backend:** Cloud Run (FastAPI) ※別リポジトリ
+</details>
 
 ---
 
-## 🛠 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -167,45 +124,20 @@ graph LR
 
 ### Installation
 
-環境構築セットアップスクリプトを実行してください:
-
 ```bash
 ./scripts/setup.sh
 ```
 
 ### Development
 
-開発サーバーを起動:
-
 ```bash
 npm run dev
+# アプリケーションは http://localhost:5173 で起動します
 ```
 
-アプリケーションは `http://localhost:5173` で起動します。
-
 ---
 
-## 🔧 Environment Variables
-
-アプリケーションの動作に必要な環境変数です。`.env` ファイルに設定します。
-
-| 変数名                 | 説明                                         | デフォルト値            |
-| :--------------------- | :------------------------------------------- | :---------------------- |
-| `VITE_API_BASE_URL`    | バックエンド API のベース URL                | `http://localhost:8000` |
-| `VITE_API_TIMEOUT`     | API リクエストタイムアウト (ms)              | `30000`                 |
-| `VITE_MAX_VIDEO_SIZE`  | アップロード可能な最大ファイルサイズ (Bytes) | `104857600` (100MB)     |
-| `VITE_CF_BEACON_TOKEN` | Cloudflare Web Analytics トークン            | -                       |
-
-### Cloudflare での設定
-
-1. **Cloudflare Dashboard** にアクセス
-2. **Workers & Pages** -> 対象のプロジェクトを選択
-3. **Settings** -> **Environment variables** を開く
-4. **Production** と **Preview** 環境それぞれに変数を追加
-
----
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 app/
@@ -229,7 +161,28 @@ app/
 
 ---
 
-## 🚢 Deployment
+## Environment Variables
+
+| 変数名                 | 説明                                         | デフォルト値            |
+| :--------------------- | :------------------------------------------- | :---------------------- |
+| `VITE_API_BASE_URL`    | バックエンド API のベース URL                | `http://localhost:8000` |
+| `VITE_API_TIMEOUT`     | API リクエストタイムアウト (ms)              | `30000`                 |
+| `VITE_MAX_VIDEO_SIZE`  | アップロード可能な最大ファイルサイズ (Bytes) | `104857600` (100MB)     |
+| `VITE_CF_BEACON_TOKEN` | Cloudflare Web Analytics トークン            | -                       |
+
+<details>
+<summary><strong>Cloudflare での設定方法</strong></summary>
+
+1. **Cloudflare Dashboard** にアクセス
+2. **Workers & Pages** -> 対象のプロジェクトを選択
+3. **Settings** -> **Environment variables** を開く
+4. **Production** と **Preview** 環境それぞれに変数を追加
+
+</details>
+
+---
+
+## Deployment
 
 本プロジェクトは **Cloudflare Workers** へのデプロイを想定しています。
 SSRモードが有効になっているため、`@react-router/cloudflare` アダプターを使用します。
@@ -238,6 +191,167 @@ SSRモードが有効になっているため、`@react-router/cloudflare` ア�
 npm run build
 npm run deploy  # Cloudflare にデプロイ
 ```
+
+---
+
+## 開発ワークフロー
+
+<details>
+<summary><strong>詳細な開発フロー</strong></summary>
+
+### 1. ブランチ作成
+
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/your-feature-name
+```
+
+### 2. 開発サイクル
+
+```bash
+npm run dev                    # 開発サーバー起動
+npm run test                   # 変更箇所のテスト実行
+./scripts/quality-check.sh     # コミット前に必ず実行
+```
+
+### 3. コミット & プッシュ
+
+```bash
+git add .
+git commit -m "feat: 機能の説明"
+git push origin feature/your-feature-name
+```
+
+### 4. PR 作成
+
+- `develop` ブランチへの PR を作成
+- CI が自動実行され、Lint/Test/Build が通過することを確認
+- レビューを受けてマージ
+
+</details>
+
+---
+
+## コーディング規約
+
+<details>
+<summary><strong>ファイル命名とスタイルガイド</strong></summary>
+
+### ファイル命名
+
+| 種類           | 規約                   | 例                      |
+| -------------- | ---------------------- | ----------------------- |
+| コンポーネント | PascalCase             | `UploadDropzone.tsx`    |
+| フック         | camelCase (use-)       | `useVideoProcessing.ts` |
+| ユーティリティ | camelCase              | `toast.ts`              |
+| テスト         | 対応ファイル名 + .test | `toast.test.ts`         |
+| 定数           | camelCase              | `upload.ts`             |
+
+### コメント言語
+
+- **JSDoc / コードコメント**: 日本語
+- **コミットメッセージ**: 英語 (Conventional Commits 形式)
+  - `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`
+
+### インポート順序
+
+```typescript
+// 1. 外部ライブラリ
+import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+
+// 2. 内部モジュール (@ エイリアス)
+import { useVideoStore } from '@/lib/stores/video.store';
+import { showSuccess } from '@/lib/utils/toast';
+
+// 3. 相対パス
+import { UploadDropzone } from './UploadDropzone';
+```
+
+</details>
+
+---
+
+## トラブルシューティング
+
+<details>
+<summary><strong>よくある問題と解決策</strong></summary>
+
+#### `npm run dev` 時に 504 エラーが出る
+
+Vite のキャッシュが古くなっている可能性があります。
+
+```bash
+rm -rf node_modules/.vite
+npm run dev
+```
+
+#### `CORS policy` エラーが発生する
+
+ローカル環境で Cloudflare Analytics (beacon) が CORS エラーを出すのは正常な動作です。
+本番環境では問題なく動作します。
+
+#### テストが失敗する
+
+1. まず最新の依存関係をインストール:
+   ```bash
+   npm install
+   ```
+2. TypeScript の型を再生成:
+   ```bash
+   npm run typegen
+   ```
+3. テストを再実行:
+   ```bash
+   npm run test
+   ```
+
+#### ビルドが失敗する
+
+```bash
+npm run clean      # キャッシュをクリア
+npm install        # 依存関係を再インストール
+npm run build      # 再ビルド
+```
+
+</details>
+
+---
+
+## 関連プロジェクト
+
+| リポジトリ                                                              | 説明                                      |
+| ----------------------------------------------------------------------- | ----------------------------------------- |
+| [pose-est-backend](https://github.com/kenken-201/pose-est-backend-2025) | バックエンド API (FastAPI, Cloud Run)     |
+| [pose-est-infra](https://github.com/kenken-201/pose-est-infra-2025)     | インフラ構成 (Terraform, Cloudflare, GCP) |
+
+### タスク管理
+
+- [`todo-list.md`](./todo-list.md): 開発ロードマップ
+
+---
+
+## Contributing
+
+<details>
+<summary><strong>コントリビューションガイド</strong></summary>
+
+1. このリポジトリをフォーク (または直接クローン)
+2. `develop` ブランチから feature ブランチを作成
+3. 変更を加え、テストを追加
+4. `./scripts/quality-check.sh` が通ることを確認
+5. PR を作成し、レビューを依頼
+
+### PR チェックリスト
+
+- [ ] `npm run test` が通る
+- [ ] `npm run lint` が通る
+- [ ] `npm run build` が通る
+- [ ] 新機能には対応するテストを追加した
+- [ ] ドキュメント (README / JSDoc) を更新した
+
+</details>
 
 ---
 
