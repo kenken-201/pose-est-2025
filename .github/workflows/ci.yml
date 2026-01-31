@@ -18,61 +18,66 @@ on:
       - '.prettierignore'
       - 'LICENSE'
 
-# 同一ブランチで新しいプッシュがあった場合、古いワークフローをキャンセル（リソース節約）
+# 同一ブランチで新しいプッシュがあった場合、古いワークフローをキャンセル
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# 実行権限を最小限に制限（セキュリティのベストプラクティス）
+# 最小権限の原則
 permissions:
   contents: read
+  actions: read
+
+env:
+  NODE_VERSION: '20'
 
 jobs:
-  # 軽量なチェックを先に実行し、失敗時は重いテストをスキップ
+  # ステージ1: 軽量チェック（失敗時は重いテストをスキップ）
   lint-and-typecheck:
-    name: Lint & TypeCheck
+    name: 🔍 Lint & TypeCheck
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      # Lint & Format Check (最も高速)
-      - name: Lint and Format Check
-        run: |
-          npm run lint
-          npm run format:check
+      - name: Lint
+        run: npm run lint
 
-      # TypeCheck (typegen が必要)
-      - name: Type Check
-        run: |
-          npm run typegen
-          npm run typecheck
+      - name: Format Check
+        run: npm run format:check
 
+      - name: Generate Types
+        run: npm run typegen
+
+      - name: TypeCheck
+        run: npm run typecheck
+
+  # ステージ2: テスト（Lint/TypeCheck 通過後）
   test:
-    name: Unit Tests
+    name: 🧪 Unit Tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: lint-and-typecheck # Lint/TypeCheck が通ってからテスト実行
+    needs: lint-and-typecheck
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
       - name: Install dependencies
@@ -81,8 +86,41 @@ jobs:
       - name: Run Tests with Coverage
         run: npm run test:coverage
 
-      - name: Upload coverage to Codecov
+      - name: Upload Coverage Report
         uses: codecov/codecov-action@v4
         with:
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+
+  # ステージ3: ビルド検証（テスト通過後）
+  build:
+    name: 🏗️ Build Verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_API_BASE_URL: https://api-dev.kenken-pose-est.online
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: build/
+          retention-days: 1
