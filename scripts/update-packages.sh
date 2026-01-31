@@ -7,24 +7,25 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}📦 Starting package update process...${NC}"
+echo -e "${GREEN}📦 Starting package update process (Bun)...${NC}"
 
-# Check for npm-check-updates
-if ! command -v npx &> /dev/null; then
-    echo -e "${RED}Error: npx is required but not installed.${NC}"
+# Check for bun
+if ! command -v bun &> /dev/null; then
+    echo -e "${RED}Error: bun is required but not installed.${NC}"
+    echo -e "${YELLOW}Install with: brew install oven-sh/bun/bun${NC}"
     exit 1
 fi
 
 echo -e "${YELLOW}🔍 Checking for outdated packages...${NC}"
+# Note: bun doesn't have a native 'outdated' command, using npm for this
 npm outdated || true
 
 echo -e "${YELLOW}🔄 Updating packages (target: minor)...${NC}"
 # Update only patch and minor versions to avoid breaking changes
-# User can manually update major versions if needed
-npx npm-check-updates -u --target minor
+bunx npm-check-updates -u --target minor
 
 echo -e "${YELLOW}📥 Installing updates...${NC}"
-npm install
+bun install
 
 echo -e "${GREEN}✅ Packages updated successfully.${NC}"
 
