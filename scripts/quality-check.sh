@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# quality-check.sh - 品質管理スクリプト
+# quality-check.sh - 品質管理スクリプト (Bun 対応)
 # =============================================================================
 # 各タスク完了時に実行する品質チェックを一括で行います。
 # 
@@ -9,10 +9,10 @@
 #   ./scripts/quality-check.sh --fix  # lint修正を含めて実行
 #
 # チェック項目:
-#   1. TypeScript 型チェック (npm run typecheck)
-#   2. ESLint コード品質チェック (npm run lint / lint:fix)
-#   3. 単体テスト + カバレッジ (npm run test:coverage)
-#   4. プロダクションビルド (npm run build)
+#   1. TypeScript 型チェック (bun run typecheck)
+#   2. ESLint コード品質チェック (bun run lint / lint:fix)
+#   3. 単体テスト + カバレッジ (bun run test:coverage)
+#   4. プロダクションビルド (bun run build)
 # =============================================================================
 
 set -e
@@ -33,7 +33,17 @@ cd "$PROJECT_ROOT"
 echo ""
 echo -e "${BLUE}╔════════════════════════════════════════════════════════════════╗${NC}"
 echo -e "${BLUE}║           KenKen Pose Estimation - Quality Check              ║${NC}"
+echo -e "${BLUE}║                      (Powered by Bun 🍞)                       ║${NC}"
 echo -e "${BLUE}╚════════════════════════════════════════════════════════════════╝${NC}"
+echo ""
+
+# Bunのバージョン確認
+if command -v bun &> /dev/null; then
+    echo -e "${GREEN}Using Bun $(bun --version)${NC}"
+else
+    echo -e "${RED}Error: Bun is not installed. Please install it: brew install oven-sh/bun/bun${NC}"
+    exit 1
+fi
 echo ""
 
 # 引数解析
@@ -69,23 +79,23 @@ run_step() {
 }
 
 # 1. TypeScript 型チェック (CI準拠: typegen含む)
-run_step "TypeScript TypeGen" "npm run typegen" || true
-run_step "TypeScript Type Check" "npm run typecheck" || true
+run_step "TypeScript TypeGen" "bun run typegen" || true
+run_step "TypeScript Type Check" "bun run typecheck" || true
 
 # 2. コードスタイル (Prettier & ESLint)
 if $FIX_MODE; then
-    run_step "Prettier Format (Write)" "npm run format" || true
-    run_step "ESLint (Fix)" "npm run lint:fix" || true
+    run_step "Prettier Format (Write)" "bun run format" || true
+    run_step "ESLint (Fix)" "bun run lint:fix" || true
 else
-    run_step "Prettier Format (Check)" "npm run format:check" || true
-    run_step "ESLint (Check)" "npm run lint" || true
+    run_step "Prettier Format (Check)" "bun run format:check" || true
+    run_step "ESLint (Check)" "bun run lint" || true
 fi
 
 # 3. 単体テスト + カバレッジ
-run_step "Unit Tests with Coverage" "npm run test:coverage" || true
+run_step "Unit Tests with Coverage" "bun run test:coverage" || true
 
 # 4. プロダクションビルド
-run_step "Production Build" "npm run build" || true
+run_step "Production Build" "bun run build" || true
 
 # サマリー表示
 echo -e "${BLUE}╔════════════════════════════════════════════════════════════════╗${NC}"
