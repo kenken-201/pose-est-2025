@@ -612,7 +612,7 @@ Cloudflare のプラットフォーム機能を活用し、アプリケーショ
 - [x] `npm uninstall` で削除
 - [x] `npm test && npm run build` で動作確認
 
-#### ⬜ タスク 13-6: Bun への移行検討
+#### ✅ タスク 13-6: Bun への移行
 
 **目的**: パッケージマネージャーを npm から Bun に移行し、CI/CD 高速化と開発効率向上を図る。
 
@@ -625,30 +625,34 @@ Cloudflare のプラットフォーム機能を活用し、アプリケーショ
 
 **13-6a: ローカル開発環境の移行**
 
-- [ ] Bun のインストール (`brew install oven-sh/bun/bun`)
-- [ ] `bun install` で依存関係インストール → `bun.lockb` 生成
-- [ ] `package-lock.json` を `.gitignore` に追加（または削除）
-- [ ] `package.json` の `engines` 更新
-- [ ] ローカルで `bun run dev`, `bun run build`, `bun run test` 動作確認
+- [x] Bun のインストール (`brew install oven-sh/bun/bun`)
+- [x] `bun install` で依存関係インストール → `bun.lockb` 生成
+- [x] `package-lock.json` を `.gitignore` に追加
+- [x] `package.json` の `engines` 更新、`packageManager` 追加
+- [x] ローカルで `bun run dev`, `bun run build`, `bun run test` 動作確認
 
 **13-6b: CI/CD ワークフローの移行**
 
-- [ ] `.github/workflows/ci.yml` を Bun 対応に更新
+- [x] `.github/workflows/ci.yml` を Bun 対応に更新
   - `oven-sh/setup-bun@v2` アクションを使用
   - `npm ci` → `bun install --frozen-lockfile`
   - `npm run xxx` → `bun run xxx`
-- [ ] `.github/workflows/deploy-workers.yml` を同様に更新
-- [ ] PR で CI 実行時間を比較（Before/After）
+- [x] `.github/workflows/deploy-workers.yml` を同様に更新
+- [x] PR で CI 実行時間を比較（Before/After）（マージ後に確認）
+  - **CIは30%ほど削減(1m36s → 1m09s)**
+  - **CDは**
 
-**13-6c: ドキュメント更新**
+**13-6c: ドキュメント・スクリプト更新**
 
-- [ ] `README.md` の Prerequisites に Bun を追記
-- [ ] `scripts/setup.sh` を Bun 対応に更新
+- [x] `README.md` の Prerequisites に Bun を追記
+- [x] `scripts/setup.sh` を Bun 対応に更新
+- [x] `scripts/quality-check.sh` を Bun 対応に更新
+- [x] `scripts/update-packages.sh` を Bun 対応に更新
 
-**期待効果**:
+**実績効果**:
 
-- `npm ci` → `bun install`: **2-5 倍高速化**
-- CI 全体で **1-3 分短縮** を期待
+- `bun install`: 約 700ms で完了（npm ci は数秒）
+- 全品質チェック（TypeCheck, Lint, Test, Build）成功
 
 ---
 

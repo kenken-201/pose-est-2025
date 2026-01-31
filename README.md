@@ -166,8 +166,8 @@
 
 ### Prerequisites
 
-- Node.js >= 18.0.0
-- npm
+- [Bun](https://bun.sh/) >= 1.3.0
+- Node.js >= 18.0.0 (一部ツールで使用)
 
 ### Quick Start
 
@@ -176,7 +176,7 @@
 ./scripts/setup.sh
 
 # 開発サーバー起動
-npm run dev
+bun run dev
 # → http://localhost:5173
 ```
 
@@ -185,19 +185,21 @@ npm run dev
 ## Project Structure
 
 ```
+
 app/
-├── components/           # UI コンポーネント
-│   ├── layout/           # MainLayout
-│   ├── ui/               # LoadingSpinner 等
-│   └── video/            # ProcessingContainer, UploadDropzone
+├── components/ # UI コンポーネント
+│ ├── layout/ # MainLayout
+│ ├── ui/ # LoadingSpinner 等
+│ └── video/ # ProcessingContainer, UploadDropzone
 ├── lib/
-│   ├── api/              # API クライアント、エラーハンドリング
-│   ├── hooks/            # useVideoProcessing
-│   ├── stores/           # Zustand ストア
-│   └── utils/            # ユーティリティ
-├── routes/               # ルーティング定義
-├── root.tsx              # アプリケーションルート
-└── entry.client.tsx      # クライアントエントリー
+│ ├── api/ # API クライアント、エラーハンドリング
+│ ├── hooks/ # useVideoProcessing
+│ ├── stores/ # Zustand ストア
+│ └── utils/ # ユーティリティ
+├── routes/ # ルーティング定義
+├── root.tsx # アプリケーションルート
+└── entry.client.tsx # クライアントエントリー
+
 ```
 
 ---
@@ -225,8 +227,8 @@ app/
 ## Deployment
 
 ```bash
-npm run build
-npm run deploy  # Cloudflare Workers へデプロイ
+bun run build
+bun run deploy  # Cloudflare Workers へデプロイ
 ```
 
 ---
@@ -247,8 +249,8 @@ git checkout -b feature/your-feature
 ### 2. 開発サイクル
 
 ```bash
-npm run dev              # 開発サーバー
-npm run test             # テスト実行
+bun run dev              # 開発サーバー
+bun run test             # テスト実行
 ./scripts/quality-check.sh  # コミット前チェック
 ```
 
@@ -296,10 +298,10 @@ chore: その他
 <details>
 <summary><strong>よくある問題</strong></summary>
 
-#### npm run dev 時に 504 エラー
+#### bun run dev 時に 504 エラー
 
 ```bash
-rm -rf node_modules/.vite && npm run dev
+rm -rf node_modules/.vite && bun run dev
 ```
 
 #### CORS エラー
@@ -309,7 +311,7 @@ rm -rf node_modules/.vite && npm run dev
 #### テスト/ビルドが失敗
 
 ```bash
-npm run clean && npm install && npm run build
+bun run clean && bun install && bun run build
 ```
 
 </details>
@@ -338,9 +340,9 @@ npm run clean && npm install && npm run build
 
 ### PR チェックリスト
 
-- [ ] `npm run test` 通過
-- [ ] `npm run lint` 通過
-- [ ] `npm run build` 通過
+- [ ] `bun run test` 通過
+- [ ] `bun run lint` 通過
+- [ ] `bun run build` 通過
 - [ ] テスト追加済み
 - [ ] ドキュメント更新済み
 
