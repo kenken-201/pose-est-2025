@@ -3,19 +3,25 @@ name: Deploy Workers
 on:
   push:
     branches: [main, develop]
-    paths:
-      - '**'
-      - '.github/workflows/deploy-workers.yml'
-  pull_request:
-    branches: [main, develop]
-    paths:
-      - '**'
-      - '.github/workflows/deploy-workers.yml'
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+      - '.prettierignore'
+      - 'LICENSE'
+  # PR ではデプロイせず CI のみ実行するため、pull_request トリガーを削除
+
+# 同一ブランチで新しいプッシュがあった場合、古いワークフローをキャンセル
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     name: Deploy
+    timeout-minutes: 10
+
     steps:
       - uses: actions/checkout@v4
 
@@ -24,14 +30,13 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-          cache-dependency-path: package-lock.json
 
       - name: Install Dependencies
         run: npm ci
 
-      # develop / PR: Build with Dev API URL
+      # develop: Build with Dev API URL
       - name: Build (Preview)
-        if: github.ref != 'refs/heads/main'
+        if: github.ref == 'refs/heads/develop'
         run: npm run build
         env:
           VITE_CF_BEACON_TOKEN: ${{ secrets.VITE_CF_BEACON_TOKEN }}
@@ -45,9 +50,9 @@ jobs:
           VITE_CF_BEACON_TOKEN: ${{ secrets.VITE_CF_BEACON_TOKEN }}
           VITE_API_BASE_URL: https://api.kenken-pose-est.online
 
-      # develop / PR: Deploy to Preview
+      # develop: Deploy to Preview
       - name: Deploy (Preview)
-        if: github.ref != 'refs/heads/main'
+        if: github.ref == 'refs/heads/develop'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
