@@ -6,6 +6,24 @@
  */
 export const SECURITY_HEADERS = {
   /**
+   * Content Security Policy (CSP)
+   * 信頼されたソースからのコンテンツのみ実行を許可し、XSS 攻撃を防止する
+   * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+   */
+  'Content-Security-Policy':
+    "default-src 'self'; " +
+    "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; " +
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+    "font-src 'self' https://fonts.gstatic.com; " +
+    "img-src 'self' data:; " +
+    "connect-src 'self' https://api.kenken-pose-est.online https://api-dev.kenken-pose-est.online https://cloudflareinsights.com; " +
+    "media-src 'self' blob:; " +
+    "frame-src 'self'; " +
+    "object-src 'none'; " +
+    "base-uri 'self'; " +
+    "form-action 'self'; " +
+    'upgrade-insecure-requests',
+  /**
    * MIME タイプスニッフィングを無効化
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
    */
