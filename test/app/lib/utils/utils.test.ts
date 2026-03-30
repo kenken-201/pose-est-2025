@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { isValidEmail, isValidUUID, isValidUrl } from '@/lib/utils/validation';
-import { formatFileSize, getFileExtension } from '@/lib/utils/file-utils';
+import { formatFileSize, getFileExtension, isVideoFile } from '@/lib/utils/file-utils';
 import { logger, Logger } from '@/lib/utils/logger';
 
 // ... (other tests omit for brevity in description but I will include them if I replace whole file or use context correctly)
@@ -55,6 +55,40 @@ describe('Logger Utility', () => {
     // but we can at least ensure standard instantiation works
     const simpleLogger = new Logger();
     expect(simpleLogger).toBeDefined();
+  });
+});
+
+describe('isVideoFile', () => {
+  it('should return true for valid video MIME types', () => {
+    const mp4File = new File([''], 'test.mp4', { type: 'video/mp4' });
+    const webmFile = new File([''], 'test.webm', { type: 'video/webm' });
+    const quicktimeFile = new File([''], 'test.mov', { type: 'video/quicktime' });
+
+    expect(isVideoFile(mp4File)).toBe(true);
+    expect(isVideoFile(webmFile)).toBe(true);
+    expect(isVideoFile(quicktimeFile)).toBe(true);
+  });
+
+  it('should return false for non-video MIME types', () => {
+    const imageFile = new File([''], 'test.jpg', { type: 'image/jpeg' });
+    const textFile = new File([''], 'test.txt', { type: 'text/plain' });
+    const audioFile = new File([''], 'test.mp3', { type: 'audio/mpeg' });
+    const pdfFile = new File([''], 'test.pdf', { type: 'application/pdf' });
+
+    expect(isVideoFile(imageFile)).toBe(false);
+    expect(isVideoFile(textFile)).toBe(false);
+    expect(isVideoFile(audioFile)).toBe(false);
+    expect(isVideoFile(pdfFile)).toBe(false);
+  });
+
+  it('should return false for an empty MIME type', () => {
+    const emptyTypeFile = new File([''], 'test.unknown', { type: '' });
+    expect(isVideoFile(emptyTypeFile)).toBe(false);
+  });
+
+  it('should return false for a file that only contains "video" in the name but not in type', () => {
+    const fakeVideoFile = new File([''], 'video.mp4', { type: 'application/octet-stream' });
+    expect(isVideoFile(fakeVideoFile)).toBe(false);
   });
 });
 
