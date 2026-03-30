@@ -22,7 +22,7 @@ export const SECURITY_HEADERS = {
     "object-src 'none'; " +
     "base-uri 'self'; " +
     "form-action 'self'; " +
-    "upgrade-insecure-requests",
+    'upgrade-insecure-requests',
   /**
    * MIME タイプスニッフィングを無効化
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options

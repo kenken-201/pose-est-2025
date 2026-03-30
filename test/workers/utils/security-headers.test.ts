@@ -16,7 +16,9 @@ describe('applySecurityHeaders', () => {
 
     // CSP ヘッダーが正しく設定されているか個別に確認
     expect(response.headers.get('Content-Security-Policy')).toContain("default-src 'self'");
-    expect(response.headers.get('Content-Security-Policy')).toContain('https://fonts.googleapis.com');
+    expect(response.headers.get('Content-Security-Policy')).toContain(
+      'https://fonts.googleapis.com'
+    );
 
     // 元のヘッダーが保持されているか確認
     expect(response.headers.get('Content-Type')).toBe('text/plain');
